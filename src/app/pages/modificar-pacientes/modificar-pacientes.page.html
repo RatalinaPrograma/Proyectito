@@ -1,0 +1,29 @@
+
+
+<form (ngSubmit)="modificarPaciente(pacienteForm)" #pacienteForm="ngForm">
+  <div>
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre" name="nombre" [(ngModel)]="paciente.nombre" required>
+  </div>
+  <div>
+    <label for="f_nacimiento">Fecha de Nacimiento:</label>
+    <input type="date" id="f_nacimiento" name="f_nacimiento" [(ngModel)]="paciente.f_nacimiento" required>
+  </div>
+  <div>
+    <label for="idGenero">Género:</label>
+    <select id="idGenero" name="idGenero" [(ngModel)]="paciente.idGenero" required>
+      <option [ngValue]="1">Masculino</option>
+      <option [ngValue]="2">Femenino</option>
+      <option [ngValue]="3">Otro</option>
+    </select>
+  </div>
+  <div>
+    <label for="rut">RUT:</label>
+    <input type="text" id="rut" name="rut" [(ngModel)]="paciente.rut" required>
+  </div>
+  <div>
+    <label for="telefono_contacto">Teléfono de Contacto:</label>
+    <input type="text" id="telefono_contacto" name="telefono_contacto" [(ngModel)]="paciente.telefono_contacto" required>
+  </div>
+  <button type="submit">Modificar Paciente</button>
+</form>

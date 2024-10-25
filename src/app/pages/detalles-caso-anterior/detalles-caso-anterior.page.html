@@ -1,0 +1,81 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="start">
+      <ion-menu-button menu="emergenciasMenu"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Detalles caso anterior</ion-title>
+    <ion-buttons slot="end">
+      <ion-img src="/assets/img/2.png" class="logo-img"></ion-img>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Información del Caso -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Información del Caso</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label>Fecha y Hora</ion-label>
+        <ion-text>{{ emergencia.fecha_emer }}</ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-label>Tipo de Emergencia</ion-label>
+        <ion-text>{{ emergencia.motivo }}</ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-label>Estado</ion-label>
+        <ion-text>{{ emergencia.estado }}</ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-label>Descripción</ion-label>
+        <ion-text>{{ emergencia.desc_motivo }}</ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-label>Observaciones</ion-label>
+        <ion-text>{{ emergencia.observaciones }}</ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-label>Hospital</ion-label>
+        <ion-text>{{ emergencia.idHospital }}</ion-text>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Botones de Acción -->
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button class="editarbtn">Editar Caso</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-content>
+
+<ion-footer class="custom-footer">
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-button expand="block" fill="clear" routerLink="/home" routerDirection="root">
+          <ion-icon name="home-outline"></ion-icon>
+          <ion-label>Inicio</ion-label>
+        </ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button expand="block" fill="clear" routerLink="/mapa-vivo" routerDirection="root">
+          <ion-icon name="map-outline"></ion-icon>
+          <ion-label>Ver Mapa en Vivo</ion-label>
+        </ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button expand="block" fill="clear" routerLink="/login-paramedico" routerDirection="root">
+          <ion-icon name="log-out-outline"></ion-icon>
+          <ion-label>Cerrar Sesión</ion-label>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-footer>

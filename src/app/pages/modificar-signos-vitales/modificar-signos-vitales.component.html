@@ -1,0 +1,58 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button menu="emergenciasMenu"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Signos Vitales</ion-title>
+    <ion-buttons slot="end">
+      <ion-img src="/assets/img/2.png" class="logo-img"></ion-img>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+<form (ngSubmit)="modificarSignosVitales(signosForm)" #signosForm="ngForm">
+  <div>
+    <label for="freq_cardiaca">Frecuencia cardiaca:</label>
+    <input type="number" id="freq_cardiaca" name="freq_cardiaca" [(ngModel)]="signosVitales.freq_cardiaca" required>
+    <ion-note *ngIf="signosForm.controls['freq_cardiaca']?.invalid && signosForm.controls['freq_cardiaca']?.touched" color="danger">
+      La frecuencia cardíaca debe ser un valor válido.
+    </ion-note>
+  </div>
+
+  <div>
+    <label for="presion_arterial">Presión arterial:</label>
+    <input type="text" id="presion_arterial" name="presion_arterial" [(ngModel)]="signosVitales.presion_arterial" required>
+  </div>
+
+  <div>
+    <label for="temp_corporal">Temperatura corporal:</label>
+    <input type="number" id="temp_corporal" name="temp_corporal" [(ngModel)]="signosVitales.temp_corporal" required>
+  </div>
+
+  <div>
+    <label for="sat_oxigeno">Saturación oxígeno:</label>
+    <input type="number" id="sat_oxigeno" name="sat_oxigeno" [(ngModel)]="signosVitales.sat_oxigeno" required>
+  </div>
+
+  <div>
+    <label for="freq_respiratoria">Frecuencia respiratoria:</label>
+    <input type="number" id="freq_respiratoria" name="freq_respiratoria" [(ngModel)]="signosVitales.freq_respiratoria" required>
+  </div>
+
+  <div>
+    <label for="condiciones">Condiciones:</label>
+    <input type="text" id="condiciones" name="condiciones" [(ngModel)]="signosVitales.condiciones" required>
+  </div>
+
+  <div>
+    <label for="operaciones">Operaciones:</label>
+    <input type="text" id="operaciones" name="operaciones" [(ngModel)]="signosVitales.operaciones" required>
+  </div>
+
+  <div class="button-container">
+    <button type="submit">Guardar</button>
+    <button type="button" (click)="eliminarSignosVitales()">Eliminar</button>
+  </div>
+</form>
+</ion-content>

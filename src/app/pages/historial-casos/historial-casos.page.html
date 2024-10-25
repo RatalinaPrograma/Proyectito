@@ -1,0 +1,61 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="start">
+      <ion-menu-button menu="emergenciasMenu"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Historial de casos médicos</ion-title>
+    <ion-buttons slot="end">
+      <ion-img src="/assets/img/2.png" class="logo-img"></ion-img>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="background" style="--background: url('/assets/imgs/emergencias-fondo.png') no-repeat center center / cover;">
+
+  <ion-button expand="block" (click)="generarExcel()">Exportar a Excel</ion-button>
+
+  <ion-list>
+    <ion-item *ngFor="let dato of datosTabla">
+      <ion-label>
+        <h2>ID: {{ dato.idSigno }}</h2>
+        <p>Frecuencia Cardiaca: {{ dato.freq_cardiaca }}</p>
+        <p>Presión Arterial: {{ dato.presion_arterial }}</p>
+        <p>Temperatura Corporal: {{ dato.temp_corporal }} °C</p>
+        <p>Saturación de Oxígeno: {{ dato.sat_oxigeno }}%</p>
+        <p>Frecuencia Respiratoria: {{ dato.freq_respiratoria }} rpm</p>
+        <p>Condiciones: {{ dato.condiciones }}</p>
+        <p>Operaciones: {{ dato.operaciones }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+</ion-content>
+
+<!-- Footer con diseño independiente -->
+<ion-footer class="custom-footer">
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-button expand="block" fill="clear" routerLink="/home" routerDirection="root">
+          <ion-icon name="home-outline"></ion-icon>
+          <ion-label>Inicio</ion-label>
+        </ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button expand="block" fill="clear" routerLink="/mapa-vivo" routerDirection="root">
+          <ion-icon name="map-outline"></ion-icon>
+          <ion-label>Ver Mapa en Vivo</ion-label>
+        </ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button expand="block" fill="clear" routerLink="/login-paramedico" routerDirection="root">
+          <ion-icon name="log-out-outline"></ion-icon>
+          <ion-label>Cerrar Sesión</ion-label>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-footer>

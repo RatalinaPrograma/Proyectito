@@ -1,0 +1,65 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" color="light">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Editar Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Contenedor de la Foto de Perfil -->
+  <div class="foto-container" *ngIf="persona.foto">
+    <img [src]="persona.foto" alt="Foto de Perfil" />
+  </div>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col size="6">
+        <ion-button expand="block" (click)="tomarFoto()">Tomar Foto</ion-button>
+      </ion-col>
+      <ion-col size="6">
+        <ion-button expand="block" (click)="seleccionarDesdeGaleria()">Seleccionar Foto</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Formulario de Edición del Perfil -->
+  <form (ngSubmit)="guardarCambios()">
+    <ion-item>
+      <ion-label position="floating">Nombres</ion-label>
+      <ion-input [(ngModel)]="persona.nombres" name="nombres" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Apellidos</ion-label>
+      <ion-input [(ngModel)]="persona.apellidos" name="apellidos" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">RUT</ion-label>
+      <ion-input [(ngModel)]="persona.rut" name="rut" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Correo</ion-label>
+      <ion-input type="email" [(ngModel)]="persona.correo" name="correo" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Teléfono</ion-label>
+      <ion-input type="tel" [(ngModel)]="persona.telefono" name="telefono"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Contraseña</ion-label>
+      <ion-input type="password" [(ngModel)]="persona.clave" name="clave" required></ion-input>
+    </ion-item>
+
+    <ion-button expand="block" type="submit" color="primary">
+      Guardar Cambios
+    </ion-button>
+  </form>
+</ion-content>
