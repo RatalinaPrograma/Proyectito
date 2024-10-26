@@ -16,96 +16,49 @@
 
     <ion-card class="card">
       <ion-card-content>
-        <form (submit)="onRegister()" #registerForm="ngForm">
+        <form (ngSubmit)="onRegister()" #registerForm="ngForm">
 
-          <!-- Campo Nombres -->
-          <ion-item class="input-item" [class.invalid]="nombres.invalid && nombres.touched">
-            <ion-label position="floating">Nombres</ion-label>
-            <ion-input type="text" [(ngModel)]="persona.nombres" name="nombres" #nombres="ngModel" required></ion-input>
-          </ion-item>
-          <ion-note *ngIf="nombres.invalid && nombres.touched" color="danger">
-            El campo de nombres es obligatorio.
-          </ion-note>
-
-          <!-- Campo Apellidos -->
-          <ion-item class="input-item" [class.invalid]="apellidos.invalid && apellidos.touched">
-            <ion-label position="floating">Apellidos</ion-label>
-            <ion-input type="text" [(ngModel)]="persona.apellidos" name="apellidos" #apellidos="ngModel" required></ion-input>
-          </ion-item>
-          <ion-note *ngIf="apellidos.invalid && apellidos.touched" color="danger">
-            El campo de apellidos es obligatorio.
-          </ion-note>
-
-          <!-- Campo RUT -->
-          <ion-item class="input-item" [class.invalid]="rut.invalid && rut.touched">
-            <ion-label position="floating">RUT</ion-label>
-            <ion-input type="text" [(ngModel)]="persona.rut" name="rut" #rut="ngModel" required pattern="^[0-9]+[-][0-9kK]{1}$"></ion-input>
-          </ion-item>
-          <ion-note *ngIf="rut.invalid && rut.touched" color="danger">
-            El formato del RUT es inválido.
-          </ion-note>
-
-          <!-- Campo Teléfono -->
-          <ion-item class="input-item" [class.invalid]="telefono.invalid && telefono.touched">
-            <ion-label position="floating">Teléfono</ion-label>
-            <ion-input 
-              type="tel" 
-              [(ngModel)]="persona.telefono" 
-              name="telefono" 
-              #telefono="ngModel" 
-              required 
-              maxlength="12"
-              value="+569"
-              (ionFocus)="prellenarPrefijo()"
-              pattern="^\+569[0-9]{8}$">
-            </ion-input>
-          </ion-item>
-          <ion-note *ngIf="telefono.invalid && telefono.touched" color="danger">
-            El teléfono debe seguir el formato +569XXXXXXXX.
-          </ion-note>
-
-          <!-- Campo Correo -->
-          <ion-item class="input-item" [class.invalid]="correo.invalid && correo.touched">
-            <ion-label position="floating">Correo</ion-label>
-            <ion-input type="email" [(ngModel)]="persona.correo" name="correo" #correo="ngModel" required></ion-input>
-          </ion-item>
-          <ion-note *ngIf="correo.invalid && correo.touched" color="danger">
-            Formato de correo electrónico inválido.
-          </ion-note>
-
-          <!-- Selección de Rol -->
           <ion-item>
-            <ion-label position="stacked">Rol</ion-label>
-            <ion-select placeholder="Seleccione el rol" [(ngModel)]="persona.idRol">
-              <ion-select-option value="1">Administrador</ion-select-option>
-              <ion-select-option value="2">Trabajador</ion-select-option>
-            </ion-select>
+            <ion-label position="floating">Nombres</ion-label>
+            <ion-input type="text" [(ngModel)]="persona.nombres" name="nombres" required></ion-input>
           </ion-item>
 
-          <!-- Campo Contraseña -->
-          <ion-item class="input-item" [class.invalid]="clave.invalid && clave.touched">
+          <ion-item>
+            <ion-label position="floating">Apellidos</ion-label>
+            <ion-input type="text" [(ngModel)]="persona.apellidos" name="apellidos" required></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="floating">RUT</ion-label>
+            <ion-input type="text" [(ngModel)]="persona.rut" name="rut" required></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="floating">Teléfono</ion-label>
+            <ion-input type="tel" [(ngModel)]="persona.telefono" name="telefono" required (ionFocus)="prellenarPrefijo()"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="floating">Correo</ion-label>
+            <ion-input type="email" [(ngModel)]="persona.correo" name="correo" required></ion-input>
+          </ion-item>
+
+          <ion-item>
             <ion-label position="floating">Contraseña</ion-label>
-            <ion-input 
-              type="password" 
-              [(ngModel)]="persona.clave" 
-              name="clave" 
-              #clave="ngModel" 
-              required 
-              pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{6,}$">
-            </ion-input>
+            <ion-input type="password" [(ngModel)]="persona.clave" name="clave" required></ion-input>
           </ion-item>
-          <ion-note *ngIf="clave.invalid && clave.touched" color="danger">
-            La contraseña debe tener al menos 6 caracteres, con mayúsculas, minúsculas y un carácter especial.
-          </ion-note>
 
-          <!-- Botón de registro -->
-          <ion-button expand="block" class="register-button" type="submit" [disabled]="registerForm.invalid">
-            Registrar
-          </ion-button>
+          <ion-item>
+            <ion-label position="floating">Confirmar Contraseña</ion-label>
+            <ion-input type="password" [(ngModel)]="persona.confirmarClave" name="confirmarClave" required></ion-input>
+          </ion-item>
+          <ion-note *ngIf="!coincidenContrasenas" color="danger">Las contraseñas no coinciden.</ion-note>
+
+          <ion-button expand="block" type="submit" [disabled]="registerForm.invalid">Registrar</ion-button>
         </form>
       </ion-card-content>
     </ion-card>
 
-    <ion-button expand="block" class="back-button" routerLink="/login-paramedico">Regresar</ion-button>
+    <ion-button expand="block" routerLink="/login-paramedico">Regresar</ion-button>
   </div>
 </ion-content>
