@@ -1,70 +1,102 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Ajustes de Perfil</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-toolbar color="primary">
+  <ion-buttons slot="start">
+    <ion-back-button defaultHref="/crud-usuarios"></ion-back-button>
+    <ion-menu-button menu="emergenciasMenu"></ion-menu-button>
+  </ion-buttons>
+  <ion-title>Ajustes Usuario</ion-title>
+  <ion-buttons slot="end">
+    <ion-img src="/assets/img/2.png" class="logo-img"></ion-img>
+  </ion-buttons>
+</ion-toolbar>
 
 <ion-content class="ion-padding">
   <ion-card>
     <ion-card-content>
+
+      <!-- Contenedor de la imagen de perfil -->
+      <div class="img-container">
+        <img 
+          [src]="persona.foto ? persona.foto : '/assets/img/usuario.webp'" 
+          alt="Foto de perfil" 
+          class="profile-img" 
+        />
+      </div>
+
       <form (ngSubmit)="guardarCambios()">
 
         <!-- Nombres -->
         <ion-item>
           <ion-label position="floating">Nombres</ion-label>
-          <ion-input type="text" [(ngModel)]="persona.nombres" name="nombres" required></ion-input>
+          <ion-input 
+            type="text" 
+            [(ngModel)]="persona.nombres" 
+            name="nombres" 
+            required>
+          </ion-input>
         </ion-item>
 
         <!-- Apellidos -->
         <ion-item>
           <ion-label position="floating">Apellidos</ion-label>
-          <ion-input type="text" [(ngModel)]="persona.apellidos" name="apellidos" required></ion-input>
+          <ion-input 
+            type="text" 
+            [(ngModel)]="persona.apellidos" 
+            name="apellidos" 
+            required>
+          </ion-input>
         </ion-item>
 
         <!-- RUT -->
         <ion-item>
           <ion-label position="floating">RUT</ion-label>
-          <ion-input type="text" [(ngModel)]="persona.rut" name="rut" required></ion-input>
+          <ion-input 
+            type="text" 
+            [(ngModel)]="persona.rut" 
+            name="rut" 
+            required>
+          </ion-input>
         </ion-item>
 
         <!-- Teléfono -->
         <ion-item>
           <ion-label position="floating">Teléfono</ion-label>
-          <ion-input type="tel" [(ngModel)]="persona.telefono" name="telefono" required></ion-input>
+          <ion-input 
+            type="tel" 
+            [(ngModel)]="persona.telefono" 
+            name="telefono" 
+            required>
+          </ion-input>
         </ion-item>
 
         <!-- Correo -->
         <ion-item>
           <ion-label position="floating">Correo</ion-label>
-          <ion-input type="email" [(ngModel)]="persona.correo" name="correo" required></ion-input>
+          <ion-input 
+            type="email" 
+            [(ngModel)]="persona.correo" 
+            name="correo" 
+            required>
+          </ion-input>
         </ion-item>
 
-        <!-- Contraseña anterior -->
-        <ion-item>
-          <ion-label position="floating">Contraseña Anterior</ion-label>
-          <ion-input type="password" [(ngModel)]="claveAnterior" name="claveAnterior"></ion-input>
-        </ion-item>
+        <!-- Botones -->
+        <div class="button-group">
+          <ion-button expand="block" (click)="tomarFoto()" type="button">
+            Tomar Foto
+          </ion-button>
 
-        <!-- Nueva Contraseña -->
-        <ion-item>
-          <ion-label position="floating">Nueva Contraseña</ion-label>
-          <ion-input type="password" [(ngModel)]="nuevaClave" name="nuevaClave"></ion-input>
-        </ion-item>
+          <ion-button expand="block" (click)="seleccionarDesdeGaleria()" type="button">
+            Seleccionar desde Galería
+          </ion-button>
 
-        <!-- Confirmar Nueva Contraseña -->
-        <ion-item>
-          <ion-label position="floating">Confirmar Nueva Contraseña</ion-label>
-          <ion-input type="password" [(ngModel)]="confirmarNuevaClave" name="confirmarNuevaClave"></ion-input>
-        </ion-item>
+          <ion-button expand="block" type="submit">
+            Guardar Cambios
+          </ion-button>
+        </div>
 
-        <ion-button expand="block" (click)="tomarFoto()">Tomar Foto</ion-button>
-        <ion-button expand="block" (click)="seleccionarDesdeGaleria()">Seleccionar desde Galería</ion-button>
-
-        <ion-button expand="block" type="submit">Guardar Cambios</ion-button>
       </form>
+
     </ion-card-content>
   </ion-card>
 </ion-content>
+

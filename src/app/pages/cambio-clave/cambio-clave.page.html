@@ -1,0 +1,64 @@
+<ion-toolbar color="primary">
+  <ion-buttons slot="start">
+    <ion-back-button defaultHref="/crud-usuarios"></ion-back-button>
+    <ion-menu-button menu="emergenciasMenu"></ion-menu-button>
+  </ion-buttons>
+  <ion-title>Cambiar Contraseña</ion-title>
+  <ion-buttons slot="end">
+    <ion-img src="/assets/img/2.png" class="logo-img"></ion-img>
+  </ion-buttons>
+</ion-toolbar>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title class="ion-text-center">Actualizar Contraseña</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <form (ngSubmit)="guardarCambios()">
+
+        <!-- Contraseña anterior -->
+        <ion-item>
+          <ion-label position="floating">Contraseña Anterior</ion-label>
+          <ion-input 
+            type="password" 
+            [(ngModel)]="claveAnterior" 
+            name="claveAnterior" 
+            required>
+          </ion-input>
+        </ion-item>
+
+        <!-- Nueva Contraseña -->
+        <ion-item>
+          <ion-label position="floating">Nueva Contraseña</ion-label>
+          <ion-input 
+            type="password" 
+            [(ngModel)]="nuevaClave" 
+            name="nuevaClave" 
+            required>
+          </ion-input>
+        </ion-item>
+
+        <!-- Confirmar Nueva Contraseña -->
+        <ion-item>
+          <ion-label position="floating">Confirmar Nueva Contraseña</ion-label>
+          <ion-input 
+            type="password" 
+            [(ngModel)]="confirmarNuevaClave" 
+            name="confirmarNuevaClave" 
+            required>
+          </ion-input>
+        </ion-item>
+
+        <!-- Botón de Confirmación -->
+        <ion-button expand="block" type="submit" class="ion-margin-top">
+          Guardar Nueva Contraseña
+        </ion-button>
+
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

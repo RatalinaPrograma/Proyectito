@@ -130,11 +130,6 @@ export class ModificarUsuariosPage implements OnInit {
         return 'El correo electrónico no es válido.';
       }
   
-      const contraseñaValida = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{6,}$/.test(this.persona.clave);
-      if (!contraseñaValida) {
-        return 'La contraseña debe tener al menos 6 caracteres, con mayúsculas, minúsculas y caracteres especiales.';
-      }
-  
       return ''; // No hay errores
     }
   

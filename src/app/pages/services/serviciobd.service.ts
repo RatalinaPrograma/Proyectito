@@ -564,6 +564,9 @@ export class ServiciobdService {
   }
 
 
+  
+
+
   // Validación de los campos del usuario
   private validarDatos(persona: any): boolean {
     const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -676,6 +679,21 @@ export class ServiciobdService {
     } catch (error) {
       console.error('Error al listar usuarios:', error);
       throw error;
+    }
+  }
+
+  async insertarUsuarioPredeterminado() {
+    const sql = `
+      INSERT INTO persona (nombres, apellidos, rut, correo, clave, telefono, foto, idRol) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+    `;
+    const valores = ['ADMIN', 'ADMIN', '12345678-9', 'ADMIN@ADMIN.CL', 'ADMIN', '12345678', null, 1];
+
+    try {
+      await this.database.executeSql(sql, valores);
+      console.log('Usuario predeterminado insertado correctamente');
+    } catch (error) {
+      console.error('Error al insertar el usuario predeterminado:', error);
     }
   }
 

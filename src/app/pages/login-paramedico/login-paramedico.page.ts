@@ -22,7 +22,19 @@ import { SharedService } from '../services/shared.service';
       private alertasb: AlertasService, // Servicio de alertas para mostrar mensajes
       private shared: SharedService,
     ) {}
+    ngOnInit() {
+      this.insertarUsuarioInicial();
+    }
   
+    async insertarUsuarioInicial() {
+      try {
+        await this.servicebd.insertarUsuarioPredeterminado();
+        console.log('Usuario inicial insertado o ya existente.');
+      } catch (error) {
+        console.error('Error al insertar usuario inicial:', error);
+        await this.alertasb.presentAlert('Error', 'No se pudo insertar el usuario inicial.');
+      }
+    }
     // Método para validar los campos de login
     validarLogin(): string {
       // Validar que ambos campos no estén vacíos

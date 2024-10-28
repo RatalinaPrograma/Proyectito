@@ -163,9 +163,15 @@ const routes: Routes = [
     loadChildren: () => import('./pages/agregar-personas/agregar-personas.module').then( m => m.AgregarPersonasPageModule)
   },
   {
+    path: 'cambio-clave',
+    loadChildren: () => import('./pages/cambio-clave/cambio-clave.module').then( m => m.CambioClavePageModule)
+  },
+  {
     path: '**',
     loadChildren: () => import('./pages/not-found/not-found.module').then( m => m.NotFoundPageModule)
   },
+
+
 
 
 

@@ -19,7 +19,6 @@ export class RegisterParamedicoPage {
     foto: '',
     idRol: 2, // Rol por defecto
   };
-
   coincidenContrasenas: boolean = true; // Cambiado para evitar la ñ
 
   constructor(

@@ -20,16 +20,12 @@ export class AjustesPerfilParamedicoPage implements OnInit {
     correo: '',
     telefono: '',
     foto: '',
-    clave: '',
     idRol: 2,
   };
 
-  claveAnterior: string = ''; // Contraseña actual
-  nuevaClave: string = ''; // Nueva contraseña
-  confirmarNuevaClave: string = ''; // Confirmación de la nueva contraseña
+  datosOriginales: any = {}; // Datos originales para comparación
 
   constructor(
-    private route: ActivatedRoute,
     private serviciobd: ServiciobdService,
     private alertasService: AlertasService,
     private router: Router,
@@ -48,7 +44,8 @@ export class AjustesPerfilParamedicoPage implements OnInit {
       try {
         const usuario = await this.serviciobd.obtenerUsuario(idPersona);
         if (usuario) {
-          this.persona = usuario;
+          this.persona = { ...usuario };
+          this.datosOriginales = { ...usuario }; // Guardar datos originales
         } else {
           await this.alertasService.presentAlert('Error', 'Usuario no encontrado.');
         }
@@ -62,15 +59,12 @@ export class AjustesPerfilParamedicoPage implements OnInit {
   }
 
   async guardarCambios() {
-    if (!this.validarCambioClave()) {
+    if (!this.hayCambios()) {
+      await this.alertasService.presentAlert('Aviso', 'No se detectaron cambios.');
       return;
     }
 
     try {
-      if (this.nuevaClave) {
-        this.persona.clave = this.nuevaClave; // Actualizar con la nueva contraseña
-      }
-
       await this.serviciobd.modificarPersona(this.persona);
       await this.alertasService.presentAlert('Éxito', 'Perfil actualizado correctamente.');
       this.router.navigate(['/home']);
@@ -80,23 +74,15 @@ export class AjustesPerfilParamedicoPage implements OnInit {
     }
   }
 
-  validarCambioClave(): boolean {
-    if (this.claveAnterior && this.claveAnterior !== this.persona.clave) {
-      this.alertasService.presentAlert('Error', 'La contraseña anterior no es correcta.');
-      return false;
-    }
-
-    if (this.nuevaClave.length < 6) {
-      this.alertasService.presentAlert('Error', 'La nueva contraseña debe tener al menos 6 caracteres.');
-      return false;
-    }
-
-    if (this.nuevaClave !== this.confirmarNuevaClave) {
-      this.alertasService.presentAlert('Error', 'Las nuevas contraseñas no coinciden.');
-      return false;
-    }
-
-    return true;
+  hayCambios(): boolean {
+    return (
+      this.persona.nombres !== this.datosOriginales.nombres ||
+      this.persona.apellidos !== this.datosOriginales.apellidos ||
+      this.persona.rut !== this.datosOriginales.rut ||
+      this.persona.telefono !== this.datosOriginales.telefono ||
+      this.persona.correo !== this.datosOriginales.correo ||
+      this.persona.foto !== this.datosOriginales.foto
+    );
   }
 
   async tomarFoto() {
@@ -116,4 +102,7 @@ export class AjustesPerfilParamedicoPage implements OnInit {
   goBack() {
     this.location.back();
   }
+
+  
+
 }
