@@ -53,7 +53,7 @@ export class ServiciobdService {
   private dbIsCreated: boolean = false;
 
   // Sentencias SQL de creación de tablas
-  tablaEstado: string = "CREATE TABLE IF NOT EXISTS estado(idestado INTEGER PRIMARY KEY AUTOINCREMENT, nombre VARCHAR(100) NOT NULL);";
+
 
   tablaRol: string = "CREATE TABLE IF NOT EXISTS rol(idrol INTEGER PRIMARY KEY AUTOINCREMENT, nombre VARCHAR(100) NOT NULL);";
 
@@ -80,6 +80,7 @@ export class ServiciobdService {
   tablaSignosV: string = "CREATE TABLE IF NOT EXISTS signos_vitales(idSigno INTEGER PRIMARY KEY AUTOINCREMENT, freq_cardiaca INTEGER, presion_arterial VARCHAR(10), temp_corporal INTEGER, sat_oxigeno INTEGER, freq_respiratoria INTEGER, condiciones TEXT, operaciones TEXT);";
 
   tablaDetalle_S: string = "CREATE TABLE IF NOT EXISTS detalle_s(idDetalleS INTEGER PRIMARY KEY AUTOINCREMENT, idDetalle INTEGER, idSigno INTEGER, valor VARCHAR(100), unidad VARCHAR(50), FOREIGN KEY (idDetalle) REFERENCES detalle(idDetalle), FOREIGN KEY (idSigno) REFERENCES signos_vitales(idSigno));";
+
 
   listadoPacientes: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
   listadoTrabajador: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
@@ -125,7 +126,6 @@ export class ServiciobdService {
 
   crearTablas() {
     let tablas = [
-      this.tablaEstado,
       this.tablaRol,
       this.tablaGenero,
       this.tablaPersona,
@@ -534,7 +534,6 @@ export class ServiciobdService {
 
     try {
       await this.database.executeSql(query, values);
-      this.AlertasService.presentAlert('Registro exitoso', 'Usuario registrado correctamente');
       return true;
     } catch (error) {
       console.error('Error al registrar usuario', error);
@@ -595,7 +594,6 @@ export class ServiciobdService {
       if (res.rows.length > 0) {
         return res.rows.item(0); // Usuario encontrado
       } else {
-        this.AlertasService.presentAlert('Error', 'Credenciales incorrectas');
         return null;
       }
     } catch (error) {

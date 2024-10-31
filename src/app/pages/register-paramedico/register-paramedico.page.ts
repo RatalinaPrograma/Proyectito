@@ -38,7 +38,6 @@ export class RegisterParamedicoPage {
       ? 'Usuario registrado correctamente.'
       : 'Hubo un error en el registro.';
     const titulo = registrado ? 'Registro exitoso' : 'Error en registro';
-
     this.alertasService.presentAlert(titulo, mensaje);
 
     if (registrado) {

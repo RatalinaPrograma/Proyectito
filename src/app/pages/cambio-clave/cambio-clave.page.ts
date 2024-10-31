@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ServiciobdService } from '../services/serviciobd.service';
 import { AlertasService } from '../services/alertas.service';
 import { SharedService } from '../services/shared.service';
@@ -65,8 +65,8 @@ export class CambioClavePage implements OnInit {
       return false;
     }
 
-    if (this.nuevaClave.length < 6) {
-      this.alertasService.presentAlert('Error', 'La nueva contraseña debe tener al menos 6 caracteres.');
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{6,}$/.test(this.nuevaClave)) {
+      this.alertasService.presentAlert('Error', 'La nueva contraseña debe tener al menos 6 caracteres, incluyendo mayúsculas, minúsculas y un carácter especial.');
       return false;
     }
 

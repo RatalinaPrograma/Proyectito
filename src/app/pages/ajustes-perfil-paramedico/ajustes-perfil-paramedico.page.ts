@@ -103,6 +103,9 @@ export class AjustesPerfilParamedicoPage implements OnInit {
     this.location.back();
   }
 
+  async cambiarClave() {
+    this.router.navigate(['/cambio-clave']);
+  }
   
 
 }

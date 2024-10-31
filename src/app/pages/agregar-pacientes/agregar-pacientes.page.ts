@@ -49,13 +49,11 @@ export class AgregarPacientesPage implements OnInit {
       this.paciente.telefono_contacto
     )
     .then((res) => {
-      alert('Paciente agregado con éxito');
       console.log('Respuesta:', res);
       this.router.navigate(['/crud-pacientes', this.paciente.rut]);
     })
     .catch((error) => {
       console.error('Error:', error);
-      alert(`Error al agregar al paciente: ${error.message}`);
     });
   }
 }
