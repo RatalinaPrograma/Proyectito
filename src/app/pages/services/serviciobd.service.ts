@@ -111,10 +111,11 @@ export class ServiciobdService {
         location: 'default'
       }).then(async (db: SQLiteObject) => {
         this.database = db;
-        
+        //await db.executeSql('DROP TABLE IF EXISTS persona;', []);
         this.crearTablas();
         this.isDBReady.next(true);
         this.dbIsCreated = true;
+        this.insertarUsuarioPredeterminado();
       }).catch(e => {
         console.error('Error al crear la BD', e);
         this.presentAlert('Creación de BD', 'Error creando la BD: ' + JSON.stringify(e));
@@ -195,7 +196,10 @@ export class ServiciobdService {
         alert('Paciente modificado ' + res.rowsAffected + ' RUT: ' + rutPaciente + ' IDSIGNO: ' + idSigno)
         return { code: 'OK', message: 'Paciente modificado', changes: res.rowsAffected };
       })
-      .catch(e => {
+      .catch(async e => {
+        if (idSigno) {
+          await this.eliminarSignosVitales(idSigno, rutPaciente);
+        }
         return { code: 'ERROR', message: `No se pudo actualizar el id signo vital en paciente ${idSigno} rut: ${rutPaciente} ERROR: ${JSON.stringify(e)}`, changes: null };
       });
   }
@@ -680,20 +684,30 @@ export class ServiciobdService {
     }
   }
 
-  async insertarUsuarioPredeterminado() {
-    const sql = `
-      INSERT INTO persona (nombres, apellidos, rut, correo, clave, telefono, foto, idRol) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?);
-    `;
-    const valores = ['ADMIN', 'ADMIN', '12345678-9', 'ADMIN@ADMIN.CL', 'ADMIN', '12345678', null, 1];
 
+  async insertarUsuarioPredeterminado() {
+    const valores = ['ADMIN', 'ADMIN', 'ADMIN@ADMIN.CL', 'Tacora.2516', '12345678', null, 1, '12345678-9'];
+  
     try {
-      await this.database.executeSql(sql, valores);
-      console.log('Usuario predeterminado insertado correctamente');
+      await this.verificarUsuario('12345678-9').then(async existe => {
+        let sql = '';
+        if (existe) {
+          alert('Usuario predeterminado ya existe');
+          sql = `
+            UPDATE persona SET nombres = ?, apellidos = ?, correo = ?, clave = ?, telefono = ?, foto = ?, idRol = ? WHERE rut = ?`;
+        } else {
+          alert('Usuario predeterminado no existe');
+          sql = `
+            INSERT INTO persona (nombres, apellidos, correo, clave, telefono, foto, idRol, rut) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+        }
+      });
     } catch (error) {
-      console.error('Error al insertar el usuario predeterminado:', error);
+      console.error('Error al insertar usuario predeterminado:', error);
+      throw error;
     }
   }
+  
 
 ////////////////////////
 

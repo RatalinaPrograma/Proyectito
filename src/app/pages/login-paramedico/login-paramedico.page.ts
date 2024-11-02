@@ -23,7 +23,7 @@ import { SharedService } from '../services/shared.service';
       private shared: SharedService,
     ) {}
     ngOnInit() {
-      this.insertarUsuarioInicial();
+      // this.insertarUsuarioInicial();
     }
   
     async insertarUsuarioInicial() {

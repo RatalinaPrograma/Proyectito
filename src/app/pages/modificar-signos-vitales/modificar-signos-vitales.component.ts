@@ -68,8 +68,8 @@ export class ModificarSignosVitalesComponent  implements OnInit {
       freq_respiratoria 
     } = this.signosVitales;
   
-    if (freq_cardiaca < 0) {
-      this.presentAlert('Error', 'La frecuencia cardíaca no puede ser negativa.');
+    if (freq_cardiaca < 40) {
+      this.presentAlert('Error', 'La frecuencia cardíaca no puede ser menor a 40.');
       return;
     }
   
