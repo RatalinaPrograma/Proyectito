@@ -111,7 +111,8 @@ export class ServiciobdService {
         location: 'default'
       }).then(async (db: SQLiteObject) => {
         this.database = db;
-        //await db.executeSql('DROP TABLE IF EXISTS persona;', []);
+        // await db.executeSql('DROP TABLE IF EXISTS persona;', []);
+        await db.executeSql('DROP TABLE IF EXISTS paciente;', []);
         this.crearTablas();
         this.isDBReady.next(true);
         this.dbIsCreated = true;
@@ -686,27 +687,31 @@ export class ServiciobdService {
 
 
   async insertarUsuarioPredeterminado() {
-    const valores = ['ADMIN', 'ADMIN', 'ADMIN@ADMIN.CL', 'Tacora.2516', '12345678', null, 1, '12345678-9'];
+    const valores = ['ADMIN', 'ADMIN', 'ADMIN@ADMIN.CL', 'Admin.123', '12345678', null, 1, '123456789-9'];
   
     try {
-      await this.verificarUsuario('12345678-9').then(async existe => {
-        let sql = '';
-        if (existe) {
-          alert('Usuario predeterminado ya existe');
-          sql = `
-            UPDATE persona SET nombres = ?, apellidos = ?, correo = ?, clave = ?, telefono = ?, foto = ?, idRol = ? WHERE rut = ?`;
-        } else {
-          alert('Usuario predeterminado no existe');
-          sql = `
-            INSERT INTO persona (nombres, apellidos, correo, clave, telefono, foto, idRol, rut) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-        }
-      });
+      const existe = await this.verificarUsuario('12345678-9');
+      let sql = '';
+
+      if (existe) {
+        sql = `
+          UPDATE persona SET nombres = ?, apellidos = ?, correo = ?, clave = ?, telefono = ?, foto = ?, idRol = ? WHERE rut = ?`;
+      } else {
+        sql = `
+          INSERT INTO persona (nombres, apellidos, correo, clave, telefono, foto, idRol, rut) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+      }
+  
+      // Ejecuta la consulta SQL con this.database.executeSql
+      await this.database.executeSql(sql, valores);
+  
     } catch (error) {
       console.error('Error al insertar usuario predeterminado:', error);
       throw error;
     }
   }
+  
+
   
 
 ////////////////////////
