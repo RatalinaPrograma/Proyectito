@@ -85,7 +85,6 @@ export class AgregarPacientesPage implements OnInit {
   
       // Si el guardado es exitoso, muestra el mensaje de éxito
       console.log('Paciente guardado con éxito:', res);
-      alert('Paciente agregado correctamente.');
       
     } catch (error) {
       // Maneja cualquier error durante el guardado

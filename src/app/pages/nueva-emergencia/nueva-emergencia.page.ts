@@ -90,7 +90,7 @@ export class NuevaEmergenciaPage implements OnInit {
       );
       
       console.log('Paciente guardado con éxito:', res);
-      this.router.navigate(['/envio-info', this.paciente.rut]);
+      this.router.navigate(['/envio-info']);
 
   
     } catch (error) {

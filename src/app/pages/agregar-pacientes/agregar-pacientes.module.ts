@@ -10,7 +10,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { NuevaEmergenciaPageRoutingModule } from '../nueva-emergencia/nueva-emergencia-routing.module';
+import { AgregarPacientesPageRoutingModule } from './agregar-pacientes-routing.module';
 
 @NgModule({
   imports: [
@@ -21,7 +21,7 @@ import { NuevaEmergenciaPageRoutingModule } from '../nueva-emergencia/nueva-emer
     CommonModule,
     FormsModule,
     IonicModule,
-    NuevaEmergenciaPageRoutingModule,
+    AgregarPacientesPageRoutingModule
   ],
   declarations: [AgregarPacientesPage]
 })

@@ -222,4 +222,9 @@ export class CrudPacientesPage implements OnInit, OnDestroy, ViewWillEnter {
     }
   }
 
+  AlertaMama(){
+    alert('Se ha enviado una alerta a la madre del paciente');
+    this.router.navigate(['/agregar-pacientes']);
+  }
+
 }
