@@ -28,10 +28,6 @@ const routes: Routes = [
     loadChildren: () => import('./pages/ev-nivelurgencia/ev-nivelurgencia.module').then( m => m.EvNivelurgenciaPageModule)
   },
   {
-    path: 'sel-hospital',
-    loadChildren: () => import('./pages/sel-hospital/sel-hospital.module').then( m => m.SelHospitalPageModule)
-  },
-  {
     path: 'envio-info/:rut',
     loadChildren: () => import('./pages/envio-info/envio-info.module').then( m => m.EnvioInfoPageModule)
   },
@@ -83,10 +79,6 @@ const routes: Routes = [
     loadChildren: () => import('./pages/eliminar-usuarios/eliminar-usuarios.module').then( m => m.EliminarUsuariosPageModule)
   },
   {
-    path: 'ver-usuarios',
-    loadChildren: () => import('./pages/ver-usuarios/ver-usuarios.module').then( m => m.VerUsuariosPageModule)
-  },
-  {
     path: 'crud-pacientes',
     loadChildren: () => import('./pages/crud-pacientes/crud-pacientes.module').then( m => m.CrudPacientesPageModule)
   },
@@ -106,10 +98,7 @@ const routes: Routes = [
     path: 'eliminar-pacientes/:rut',
     loadChildren: () => import('./pages/eliminar-pacientes/eliminar-pacientes.module').then( m => m.EliminarPacientesPageModule)
   },
-  {
-    path: 'ver-pacientes',
-    loadChildren: () => import('./pages/ver-pacientes/ver-pacientes.module').then( m => m.VerPacientesPageModule)
-  },
+
   {
     path: 'modificar-usuarios/:id',
     loadChildren: () => import('./pages/modificar-usuarios/modificar-usuarios.module').then( m => m.ModificarUsuariosPageModule)
@@ -130,10 +119,7 @@ const routes: Routes = [
     path: 'eliminar-hospital',
     loadChildren: () => import('./pages/eliminar-hospital/eliminar-hospital.module').then( m => m.EliminarHospitalPageModule)
   },
-  {
-    path: 'ver-hospital',
-    loadChildren: () => import('./pages/ver-hospital/ver-hospital.module').then( m => m.VerHospitalPageModule)
-  },
+
   {
     path: 'modificar-hospital/:id',
     loadChildren: () => import('./pages/modificar-hospital/modificar-hospital.module').then( m => m.ModificarHospitalPageModule)
@@ -142,10 +128,7 @@ const routes: Routes = [
     path: 'modificar-unidad',
     loadChildren: () => import('./pages/modificar-unidad/modificar-unidad.module').then( m => m.ModificarUnidadPageModule)
   },
-  {
-    path: 'ver-unidad',
-    loadChildren: () => import('./pages/ver-unidad/ver-unidad.module').then( m => m.VerUnidadPageModule)
-  },
+
   {
     path: 'eliminar-unidad',
     loadChildren: () => import('./pages/eliminar-unidad/eliminar-unidad.module').then( m => m.EliminarUnidadPageModule)
@@ -167,9 +150,15 @@ const routes: Routes = [
     loadChildren: () => import('./pages/cambio-clave/cambio-clave.module').then( m => m.CambioClavePageModule)
   },
   {
+    path: 'paciente-existe',
+    loadChildren: () => import('./pages/paciente-existe/paciente-existe.module').then( m => m.PacienteExistePageModule)
+  },
+  {
     path: '**',
     loadChildren: () => import('./pages/not-found/not-found.module').then( m => m.NotFoundPageModule)
   },
+
+
 
 
 

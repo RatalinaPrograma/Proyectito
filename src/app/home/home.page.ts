@@ -80,5 +80,6 @@ export class HomePage implements OnInit {
     // Navega a la página de soporte técnico
     this.navCtrl.navigateRoot('/soporte-tecnico');
   }
+
 }
 

@@ -1,0 +1,33 @@
+ion-header {
+    .header-title {
+      font-weight: bold;
+      font-size: 20px;
+      color: white;
+    }
+  
+    .logo-img {
+      width: 40px;
+      height: 40px;
+      margin-right: 8px;
+    }
+  }
+  
+  .custom-searchbar {
+    --background: #f2f2f2; /* Fondo del buscador */
+    --color: #0d47a1; /* Color del texto */
+    --icon-color: #0d47a1; /* Color del icono de búsqueda */
+    --placeholder-color: #707070; /* Color del texto placeholder */
+    --box-shadow: none; /* Sin sombra para un estilo limpio */
+    border-radius: 8px;
+    margin: 8px; /* Espacio alrededor del buscador */
+  }
+  
+  ion-toolbar[color="primary"] {
+    --background: #0d47a1; /* Color primario del encabezado */
+    --color: white; /* Color del texto */
+  }
+  
+  ion-toolbar[color="light"] {
+    --background: #f8f9fa; /* Fondo de la barra de búsqueda */
+  }
+  

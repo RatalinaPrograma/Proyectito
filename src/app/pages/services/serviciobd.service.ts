@@ -111,8 +111,8 @@ export class ServiciobdService {
         location: 'default'
       }).then(async (db: SQLiteObject) => {
         this.database = db;
-        // await db.executeSql('DROP TABLE IF EXISTS persona;', []);
-        await db.executeSql('DROP TABLE IF EXISTS paciente;', []);
+        await db.executeSql('DROP TABLE IF EXISTS persona;', []);
+        // await db.executeSql('DROP TABLE IF EXISTS paciente;', []);
         this.crearTablas();
         this.isDBReady.next(true);
         this.dbIsCreated = true;
@@ -322,7 +322,6 @@ export class ServiciobdService {
             "Agregar paciente",
             "Paciente agregado correctamente."
           );
-          this.location.back();
           return { message: 'Paciente agregado', changes: res.rowsAffected };
         });
     }).catch(err => {
@@ -517,15 +516,16 @@ export class ServiciobdService {
   ///////////////////////////////////////////////////////////////////////////
   // Función para registrar un usuario con validaciones
   async register(persona: any): Promise<boolean> {
+    // Verifica los datos antes de intentar el registro
     if (!this.validarDatos(persona)) {
       this.AlertasService.presentAlert('Error en registro', 'Datos incompletos o inválidos');
       return false;
     }
-
+  
     const query = `
-    INSERT INTO persona (nombres, apellidos, rut, correo, clave, telefono, foto, idRol) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `;
+      INSERT INTO persona (nombres, apellidos, rut, correo, clave, telefono, foto, idRol) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
     const values = [
       persona.nombres.trim(),
       persona.apellidos.trim(),
@@ -536,16 +536,24 @@ export class ServiciobdService {
       persona.foto || null,
       persona.idRol,
     ];
-
+  
     try {
       await this.database.executeSql(query, values);
       return true;
     } catch (error) {
       console.error('Error al registrar usuario', error);
-      this.AlertasService.presentAlert('Error en registro', 'El registro falló. Verifique los datos');
+  
+      // Manejo de errores específicos
+      if ((error as any).code === 'SQLITE_CONSTRAINT') {
+        this.AlertasService.presentAlert('Error en registro', 'El RUT o correo ya están registrados.');
+      } else {
+        this.AlertasService.presentAlert('Error en registro', 'El registro falló. Verifique los datos');
+      }
+  
       return false;
     }
   }
+  
 
   // Obtener persona por ID
   // Servicio: obtenerUsuario() en ServiciobdService
@@ -687,10 +695,9 @@ export class ServiciobdService {
 
 
   async insertarUsuarioPredeterminado() {
-    const valores = ['ADMIN', 'ADMIN', 'ADMIN@ADMIN.CL', 'Admin.123', '12345678', null, 1, '123456789-9'];
-  
+    const valores = ['Catalina', 'Gutiérrez', 'ADMIN@ADMIN.CL', 'Admin.123', '+56994125336', null, 1, '21273766-6'];
     try {
-      const existe = await this.verificarUsuario('12345678-9');
+      const existe = await this.verificarUsuario('21273766-6');
       let sql = '';
 
       if (existe) {

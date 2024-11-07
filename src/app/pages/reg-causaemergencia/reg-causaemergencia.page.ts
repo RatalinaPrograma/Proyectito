@@ -30,7 +30,7 @@ export class RegCausaEmergenciaPage {
         buttons: [{
           text: 'OK',
           handler: () => {
-            this.navCtrl.navigateForward('/nueva-emergencia');
+            this.navCtrl.navigateForward('/paciente-existe');
           }
         }],
       });

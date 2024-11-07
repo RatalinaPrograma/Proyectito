@@ -17,44 +17,50 @@
     <ion-card class="card">
       <ion-card-content>
         <form (ngSubmit)="onRegister()" #registerForm="ngForm">
-
+          
           <ion-item>
             <ion-label position="floating">Nombres</ion-label>
             <ion-input type="text" [(ngModel)]="persona.nombres" name="nombres" required></ion-input>
           </ion-item>
+          <ion-note *ngIf="!persona.nombres && registerForm.submitted" color="danger">Este campo es obligatorio.</ion-note>
 
           <ion-item>
             <ion-label position="floating">Apellidos</ion-label>
             <ion-input type="text" [(ngModel)]="persona.apellidos" name="apellidos" required></ion-input>
           </ion-item>
+          <ion-note *ngIf="!persona.apellidos && registerForm.submitted" color="danger">Este campo es obligatorio.</ion-note>
 
           <ion-item>
             <ion-label position="floating">RUT</ion-label>
-            <ion-input type="text" [(ngModel)]="persona.rut" name="rut" aria-placeholder="12345678-9" required></ion-input>
+            <ion-input type="text" [(ngModel)]="persona.rut" name="rut" required></ion-input>
           </ion-item>
+          <ion-note *ngIf="registerForm.controls['rut']?.invalid && registerForm.submitted" color="danger">Formato de RUT incorrecto.</ion-note>
 
           <ion-item>
             <ion-label position="floating">Teléfono</ion-label>
             <ion-input type="tel" [(ngModel)]="persona.telefono" name="telefono" required (ionFocus)="prellenarPrefijo()"></ion-input>
           </ion-item>
+          <ion-note *ngIf="!persona.telefono.startsWith('+569') && registerForm.submitted" color="danger">Debe comenzar con +569.</ion-note>
 
           <ion-item>
             <ion-label position="floating">Correo</ion-label>
             <ion-input type="email" [(ngModel)]="persona.correo" name="correo" required></ion-input>
           </ion-item>
+          <ion-note *ngIf="registerForm.controls['correo']?.invalid && registerForm.submitted" color="danger">Correo inválido.</ion-note>
 
           <ion-item>
             <ion-label position="floating">Contraseña</ion-label>
             <ion-input type="password" [(ngModel)]="persona.clave" name="clave" required></ion-input>
           </ion-item>
+          <ion-note *ngIf="registerForm.controls['clave']?.invalid && registerForm.submitted" color="danger">Debe tener al menos 6 caracteres, una mayúscula, una minúscula y un carácter especial.</ion-note>
 
           <ion-item>
             <ion-label position="floating">Confirmar Contraseña</ion-label>
-            <ion-input type="password" [(ngModel)]="persona.confirmarClave" name="confirmarClave" required></ion-input>
+            <ion-input type="password" [(ngModel)]="persona.confirmarClave" name="confirmarClave" required (ionChange)="verificarCoincidenciaContrasenas()"></ion-input>
           </ion-item>
           <ion-note *ngIf="!coincidenContrasenas" color="danger">Las contraseñas no coinciden.</ion-note>
 
-          <ion-button expand="block" type="submit" [disabled]="registerForm.invalid">Registrar</ion-button>
+          <ion-button expand="block" type="submit" [disabled]="registerForm.invalid" (click)="irLogin()">Registrar</ion-button>
         </form>
       </ion-card-content>
     </ion-card>

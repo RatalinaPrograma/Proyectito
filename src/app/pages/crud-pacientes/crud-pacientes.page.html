@@ -11,7 +11,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-button (click)="agregarPaciente()">Agregar paciente</ion-button>
+  <ion-button [routerLink]="['/agregar-pacientes']">Agregar paciente</ion-button>
 
   <ion-card *ngFor="let paciente of pacientes" class="paciente-card">
     <ion-card-header>
@@ -20,7 +20,7 @@
     </ion-card-header>
   
     <ion-card-content>
-      <p><strong>Fecha de Nacimiento:</strong> {{ paciente.f_nacimiento | date: 'dd/MM/yyyy' }}</p>
+      <p><strong>Fecha de Nacimiento:</strong> {{ paciente.f_nacimiento | date: 'dd/MM/YYYY' }}</p>
       <p><strong>Edad:</strong> {{ calcularEdad(paciente.f_nacimiento) }} años</p>
       <p><strong>Género:</strong> {{ paciente.idGenero }}</p>
       <p><strong>Télefono de Contacto:</strong> {{ paciente.telefono_contacto }}</p>

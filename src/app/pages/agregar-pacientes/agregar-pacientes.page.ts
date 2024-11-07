@@ -86,8 +86,7 @@ export class AgregarPacientesPage implements OnInit {
       // Si el guardado es exitoso, muestra el mensaje de éxito
       console.log('Paciente guardado con éxito:', res);
       alert('Paciente agregado correctamente.');
-      this.router.navigate(['/home', this.paciente.rut]);
-  
+      
     } catch (error) {
       // Maneja cualquier error durante el guardado
       console.error('Error al guardar el paciente:', error);
@@ -100,7 +99,7 @@ export class AgregarPacientesPage implements OnInit {
     const hoy = new Date();
     const fechaNacimiento = this.paciente.f_nacimiento ? new Date(this.paciente.f_nacimiento) : null;
     const telefonoRegex = /^\+569\d{8}$/;
-  alert(this.paciente.nombre+' '+this.paciente.f_nacimiento+' '+this.paciente.idGenero+' '+this.paciente.rut+' '+this.paciente.telefono_contacto);
+  
     // Validación del nombre
     if (!this.paciente.nombre || this.paciente.nombre.trim().length < 2) {
       alert('Por favor, ingrese el nombre completo del paciente. Debe tener al menos 2 caracteres.');
@@ -148,15 +147,10 @@ export class AgregarPacientesPage implements OnInit {
     console.log('Todas las validaciones pasaron');
     return true;
   }
-  
-    
-  
 
 
-
-  
-  
-  
-  
+  irACrudPacientes() {
+    this.router.navigate(['/crud-pacientes']);
+  }
   
 }

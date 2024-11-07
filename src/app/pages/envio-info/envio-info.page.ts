@@ -47,6 +47,19 @@ export class EnvioInfoPage implements OnInit {
     this.rut = this.route.snapshot.paramMap.get('rut') || '';
     this.obteneralPaciente();
   }
+
+  enviarEmergencia() {
+    const navigationExtras: NavigationExtras = {
+      state: {
+        paciente: this.paciente
+      }
+    };
+    this.router.navigate(['nueva-emergencia'], navigationExtras);
+  }
+
+  avanzar() {
+    this.router.navigate(['conf-recepcion']);
+  }
  
 
 
