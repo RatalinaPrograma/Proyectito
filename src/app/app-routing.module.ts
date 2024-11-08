@@ -154,9 +154,23 @@ const routes: Routes = [
     loadChildren: () => import('./pages/paciente-existe/paciente-existe.module').then( m => m.PacienteExistePageModule)
   },
   {
+    path: 'vista-medico',
+    loadChildren: () => import('./pages/vista-medico/vista-medico.module').then( m => m.VistaMedicoPageModule)
+  },
+  {
+    path: 'conf-recep',
+    loadChildren: () => import('./pages/conf-recep/conf-recep.module').then( m => m.ConfRecepPageModule)
+  },
+  {
     path: '**',
     loadChildren: () => import('./pages/not-found/not-found.module').then( m => m.NotFoundPageModule)
   },
+
+
+
+
+
+
 
 
 

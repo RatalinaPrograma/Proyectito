@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { SharedService } from '../pages/services/shared.service';
 
 @Component({
   selector: 'app-home',
@@ -16,7 +15,7 @@ export class HomePage implements OnInit {
     { titulo: 'Incendio en Edificio A', descripcion: 'Se reporta un incendio en el cuarto piso.' },
     { titulo: 'Accidente de Tráfico', descripcion: 'Colisión múltiple en la autopista.' }
   ];
-  constructor(private navCtrl: NavController, private router: Router, private shared: SharedService) {}
+  constructor(private navCtrl: NavController, private router: Router) {}
 
   ngOnInit() {
     this.actualizarHora();
@@ -27,7 +26,11 @@ export class HomePage implements OnInit {
   }
 
   obtenerRolUsuario() {
-    this.idRolUsuario = this.shared.getidRolUsuario();
+    const usuario1 = localStorage.getItem('usuario');
+    if (usuario1) {
+      const usuario = JSON.parse(usuario1);
+      this.idRolUsuario = usuario.rol;
+    }
   }
 
   actualizarHora() {

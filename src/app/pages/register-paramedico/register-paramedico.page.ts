@@ -33,24 +33,22 @@ export class RegisterParamedicoPage {
     const mensajeError = this.validarFormulario();
     if (mensajeError) {
       this.alertasService.presentAlert('Error en registro', mensajeError);
-      return;
+      this.limpiarCampoConError(mensajeError); // Borra el campo específico con error
+      return; // Detiene la ejecución para evitar redireccionar al login
     }
-
+  
     // Realiza el registro en la base de datos
     const registrado = await this.serviciobd.register(this.persona);
-    const mensaje = registrado
-      ? 'Usuario registrado correctamente.'
-      : 'Hubo un error en el registro.';
-    const titulo = registrado ? 'Registro exitoso' : 'Error en registro';
-    this.alertasService.presentAlert(titulo, mensaje);
-
-    // Reinicia el formulario y redirige si el registro es exitoso
     if (registrado) {
-      this.resetFormulario();
+      this.alertasService.presentAlert('Registro exitoso', 'Usuario registrado correctamente.');
+      this.resetFormulario(); // Limpia el formulario después de un registro exitoso
       this.irLogin(); // Redirige al login después del registro exitoso
+    } else {
+      this.alertasService.presentAlert('Error en registro', 'Este usuario ya está registrado.');
+      this.resetFormulario(); // Limpia todos los datos si el usuario ya está registrado
     }
   }
-
+  
   private validarFormulario(): string {
     // Validación de campos vacíos
     if (
@@ -152,6 +150,24 @@ export class RegisterParamedicoPage {
     }
   }
 
+  // Limpia campos específicos según el mensaje de error
+  private limpiarCampoConError(mensajeError: string) {
+    if (mensajeError.includes('nombre')) {
+      this.persona.nombres = '';
+    } else if (mensajeError.includes('apellido')) {
+      this.persona.apellidos = '';
+    } else if (mensajeError.includes('RUT')) {
+      this.persona.rut = '';
+    } else if (mensajeError.includes('correo')) {
+      this.persona.correo = '';
+    } else if (mensajeError.includes('contraseña')) {
+      this.persona.clave = '';
+      this.persona.confirmarClave = '';
+    } else if (mensajeError.includes('teléfono')) {
+      this.persona.telefono = '+569';
+    }
+  }
+
   // Reinicia el formulario y el estado de validación de las contraseñas
   private resetFormulario() {
     this.persona = {
@@ -163,12 +179,12 @@ export class RegisterParamedicoPage {
       confirmarClave: '',
       telefono: '+569',
       foto: '',
-      idRol: 2,
+      idRol: 2, // Rol predeterminado
     };
     this.coincidenContrasenas = true;
   }
 
-  // Redirige al login
+  // Redirige al login solo si el registro es exitoso
   async irLogin() {
     this.router.navigate(['/login-paramedico']);
   }

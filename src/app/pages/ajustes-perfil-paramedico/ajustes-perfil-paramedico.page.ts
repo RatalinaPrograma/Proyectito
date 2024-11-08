@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ServiciobdService } from '../services/serviciobd.service';
 import { AlertasService } from '../services/alertas.service';
-import { SharedService } from '../services/shared.service';
 import { Location } from '@angular/common';
 import { CamaraService } from '../services/camara.service';
 
@@ -29,7 +28,6 @@ export class AjustesPerfilParamedicoPage implements OnInit {
     private serviciobd: ServiciobdService,
     private alertasService: AlertasService,
     private router: Router,
-    private shared: SharedService,
     private location: Location,
     private camaraService: CamaraService
   ) {}
@@ -39,7 +37,15 @@ export class AjustesPerfilParamedicoPage implements OnInit {
   }
 
   async cargarDatosUsuario() {
-    const idPersona = this.shared.getIdUsuario();
+    const usuario1 = localStorage.getItem('usuario');
+    let idPersona: number = 0;
+
+    if (usuario1) {
+      const usuario = JSON.parse(usuario1);
+      idPersona = usuario.idPersona;
+    }
+
+
     if (idPersona) {
       try {
         const usuario = await this.serviciobd.obtenerUsuario(idPersona);

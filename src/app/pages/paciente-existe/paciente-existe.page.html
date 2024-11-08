@@ -1,30 +1,33 @@
 <ion-header>
-  <ion-toolbar color="primary">
+  <ion-toolbar>
     <ion-title>Buscar Paciente</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <ion-searchbar [(ngModel)]="rut" placeholder="Ingrese RUT" (ionInput)="buscarPaciente()"></ion-searchbar>
+<ion-content>
+  <ion-item>
+    <ion-label position="floating">RUT</ion-label>
+    <ion-input [(ngModel)]="rut" type="text"></ion-input>
+  </ion-item>
 
-  <!-- Mensaje de error si el rut es inválido o no se encuentra -->
-  <ion-card *ngIf="mensajeError">
-    <ion-card-content>
-      <ion-text color="danger">{{ mensajeError }}</ion-text>
-    </ion-card-content>
-  </ion-card>
+  <ion-button expand="full" (click)="buscarPaciente()">Buscar</ion-button>
 
-  <!-- Mostrar detalles del paciente si es encontrado -->
-  <ion-card *ngIf="paciente">
-    <ion-card-header>
-      <ion-card-title>Datos del Paciente</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <p><strong>Nombre:</strong> {{ paciente.nombre }}</p>
-      <p><strong>Fecha de Nacimiento:</strong> {{ paciente.f_nacimiento | date }}</p>
-      <p><strong>Género:</strong> {{ paciente.idGenero }}</p>
-      <p><strong>RUT:</strong> {{ paciente.rut }}</p>
-      <p><strong>Teléfono:</strong> {{ paciente.telefono_contacto }}</p>
-    </ion-card-content>
-  </ion-card>
+  <div *ngIf="mensajeError" class="error-message" style="text-align: center; margin-top: 20px;">
+    <p>{{ mensajeError }}</p>
+  </div>
+
+  <!-- Solo mostrar el botón de 'Registrar Paciente' si el rol es paramédico (2) -->
+  <div *ngIf="!paciente && rolUsuario === 2" style="text-align: center; margin-top: 20px;">
+    <ion-button color="danger" (click)="irARegistrarPaciente()">Registrar Paciente</ion-button>
+  </div>
+
+  <div *ngIf="!paciente && rolUsuario === 2" style="text-align: center; margin-top: 20px;">
+    <ion-button color="danger" (click)="irAEnvioInfo()">Ver Informacion</ion-button>
+  </div>
+
+  <!-- Mostrar el paciente encontrado y botón de 'Continuar' solo para médico (3) -->
+  <div *ngIf="paciente" style="text-align: center; margin-top: 20px;">
+    <p>Paciente encontrado: {{ paciente.nombre }}</p>
+    <ion-button color="primary" *ngIf="rolUsuario === 3" (click)="irAEnvioInfo()">Continuar</ion-button>
+  </div>
 </ion-content>

@@ -7,6 +7,7 @@ export class SignosVitales {
     freq_respiratoria: number;
     condiciones: string;
     operaciones: string;
+    nombre?:string;
 
     constructor(idSigno: number, freq_cardiaca: number, presion_arterial: string, temp_corporal: number, sat_oxigeno: number, freq_respiratoria: number, condiciones: string, operaciones: string) {
         this.idSigno = idSigno;

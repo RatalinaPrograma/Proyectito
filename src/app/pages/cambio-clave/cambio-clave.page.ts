@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ServiciobdService } from '../services/serviciobd.service';
 import { AlertasService } from '../services/alertas.service';
-import { SharedService } from '../services/shared.service';
 
 @Component({
   selector: 'app-cambio-clave',
@@ -30,7 +29,6 @@ export class CambioClavePage implements OnInit {
     private serviciobd: ServiciobdService,
     private alertasService: AlertasService,
     private router: Router,
-    private shared: SharedService
   ) {}
 
   ngOnInit() {
@@ -39,7 +37,12 @@ export class CambioClavePage implements OnInit {
 
   // Cargar datos del usuario logueado
   async cargarDatosUsuario() {
-    const idPersona = this.shared.getIdUsuario();
+    let idPersona: number = 0;
+    const usuario1 = localStorage.getItem('usuario');
+    if (usuario1){
+      const usuario = JSON.parse(usuario1);
+      idPersona = usuario.idPersona;
+    }
     if (!idPersona) {
       alert('ERROR: no se encuentra el ID del usuario.');
       return;

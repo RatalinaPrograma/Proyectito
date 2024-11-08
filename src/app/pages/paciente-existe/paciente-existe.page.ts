@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { ServiciobdService } from '../services/serviciobd.service';
 import { Pacientes } from '../services/pacientes';
-import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 
 @Component({
@@ -13,10 +12,9 @@ export class PacienteExistePage {
   rut: string = ''; 
   paciente: Pacientes | null = null; 
   mensajeError: string = '';
-
+  rolUsuario: number = 0;
   constructor(
     private serviciobd: ServiciobdService,
-    private alertController: AlertController,
     private router: Router
   ) {}
 
@@ -28,12 +26,14 @@ export class PacienteExistePage {
     }
     
     this.paciente = null;
+    this.mensajeError = ''; // Limpiar mensajes de error previos
+
     try {
       const resultado = await this.serviciobd.obtenerPaciente(this.rut.trim());
       if (resultado && resultado.nombre) {
         this.paciente = resultado; 
       } else {
-        this.mostrarAlertaPacienteNoEncontrado();
+        this.mostrarError('Paciente no encontrado. Por favor, regístrelo.');
       }
     } catch (error) {
       console.error('Error al buscar paciente', error);
@@ -47,24 +47,20 @@ export class PacienteExistePage {
     return rutRegex.test(rut.trim());
   }
 
-  async mostrarAlertaPacienteNoEncontrado() {
-    const alert = await this.alertController.create({
-      header: 'Paciente No Encontrado',
-      message: 'El paciente no se encuentra en la base de datos. Será redirigido para registrarlo.',
-      buttons: [
-        {
-          text: 'Aceptar',
-          handler: () => {
-            this.router.navigate(['/nueva-emergencia']);
-          },
-        },
-      ],
-    });
-
-    await alert.present();
-  }
-
   mostrarError(mensaje: string) {
     this.mensajeError = mensaje;
+    this.paciente = null; // Asegurarse de que paciente sea null cuando hay error
+  }
+
+  irARegistrarPaciente() {
+    this.router.navigate(['/nueva-emergencia']);
+  }
+
+  irAEnvioInfo() {
+    this.router.navigate(['/envio-info']);
+  }
+
+  irConfirmar(){
+    this.router.navigate(['/conf-recep']);
   }
 }

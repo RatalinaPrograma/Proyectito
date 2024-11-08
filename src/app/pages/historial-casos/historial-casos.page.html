@@ -14,13 +14,12 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="background" style="--background: url('/assets/imgs/emergencias-fondo.png') no-repeat center center / cover;">
-
   <ion-button expand="block" (click)="generarExcel()">Exportar a Excel</ion-button>
 
   <ion-list>
     <ion-item *ngFor="let dato of datosTabla">
       <ion-label>
-        <h2>ID: {{ dato.idSigno }}</h2>
+        <h2>Nombre: {{ dato.nombre }}</h2>
         <p>Frecuencia Cardiaca: {{ dato.freq_cardiaca }}</p>
         <p>Presión Arterial: {{ dato.presion_arterial }}</p>
         <p>Temperatura Corporal: {{ dato.temp_corporal }} °C</p>
@@ -31,8 +30,8 @@
       </ion-label>
     </ion-item>
   </ion-list>
+  
 
-</ion-content>
 
 <!-- Footer con diseño independiente -->
 <ion-footer class="custom-footer">

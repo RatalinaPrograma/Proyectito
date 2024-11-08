@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Confirmación de Recepción</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <h2>Confirmar Recepción de Información</h2>
+  <p>Por favor, selecciona si la información ha llegado correctamente o no.</p>
+
+  <!-- Botones para confirmar recepción -->
+  <ion-button expand="block" color="success" (click)="confirmarRecepcion()">
+    Confirmar Recepción Correcta
+  </ion-button>
+
+  <ion-button expand="block" color="danger" (click)="confirmarRecepcionIncorrecta()">
+    Confirmar Recepción Incorrecta
+  </ion-button>
+
+  <ion-button expand="block" color="primary" (click)="irPalla()">
+    Ir palla
+  </ion-button>
+</ion-content>

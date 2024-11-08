@@ -6,9 +6,9 @@ import { Pacientes } from './pacientes';
 import { Trabajador } from './trabajador';
 import { Rol } from './rol';
 import { AlertasService } from './alertas.service';
-import { Hospital } from './hospital';
 import { Location } from '@angular/common';
 import { SignosVitales } from './signosVitales.model';
+import { Confirmacion } from './confirmacion';
 
 @Injectable({
   providedIn: 'root'
@@ -81,6 +81,8 @@ export class ServiciobdService {
 
   tablaDetalle_S: string = "CREATE TABLE IF NOT EXISTS detalle_s(idDetalleS INTEGER PRIMARY KEY AUTOINCREMENT, idDetalle INTEGER, idSigno INTEGER, valor VARCHAR(100), unidad VARCHAR(50), FOREIGN KEY (idDetalle) REFERENCES detalle(idDetalle), FOREIGN KEY (idSigno) REFERENCES signos_vitales(idSigno));";
 
+  tablaConfirmacion: string = "CREATE TABLE IF NOT EXISTS confirmacion(idConfirmacion INTEGER PRIMARY KEY AUTOINCREMENT,idEmerg INTEGER,idPersona INTEGER,fecha_confirmacion DATE NOT NULL,estado_confirmacion BOOLEAN NOT NULL, FOREIGN KEY (idEmerg) REFERENCES emergencia(idEmerg),FOREIGN KEY (idPersona) REFERENCES persona(idPersona));"
+  
 
   listadoPacientes: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
   listadoTrabajador: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
@@ -111,7 +113,7 @@ export class ServiciobdService {
         location: 'default'
       }).then(async (db: SQLiteObject) => {
         this.database = db;
-        await db.executeSql('DROP TABLE IF EXISTS persona;', []);
+        // await db.executeSql('DROP TABLE IF EXISTS persona;', []);
         // await db.executeSql('DROP TABLE IF EXISTS paciente;', []);
         this.crearTablas();
         this.isDBReady.next(true);
@@ -139,7 +141,8 @@ export class ServiciobdService {
       this.tablaDetalle_S,
       this.tablaEmergencia,
       this.tablaTriage,
-      this.tablaPaciente
+      this.tablaPaciente,
+      this.tablaConfirmacion
     ];
 
     tablas.forEach(tabla => {
@@ -379,6 +382,21 @@ export class ServiciobdService {
     });
   }
 
+  async obtenerDatosConNombrePaciente(): Promise<any[]> {
+    const query = `
+      SELECT signos_vitales.*, paciente.nombre 
+      FROM signos_vitales
+      INNER JOIN paciente ON signos_vitales.idSigno = paciente.idSigno
+    `;
+
+    const resultado: any = await this.database.executeSql(query, []);
+    const datos = [];
+    for (let i = 0; i < resultado.rows.length; i++) {
+      datos.push(resultado.rows.item(i));
+    }
+    return datos;
+  }
+
 
   modificarPaciente(idPaciente: number, nombre: string, f_nacimiento: Date, idGenero: number, rut: string, telefono_contacto: string): Promise<any> {
     return this.verificarPaciente(rut).then(existe => {
@@ -511,10 +529,27 @@ export class ServiciobdService {
     });
   }
 
+  
+
 
 
   ///////////////////////////////////////////////////////////////////////////
   // Función para registrar un usuario con validaciones
+
+  async insertarRolesIniciales() {
+    const roles = [
+      { id: 1, nombre: 'Admin' },
+      { id: 2, nombre: 'Paramédico' },
+      { id: 3, nombre: 'Médico' }
+    ];
+
+    for (const rol of roles) {
+      const query = `INSERT OR IGNORE INTO rol (idrol, nombre) VALUES (?, ?)`;
+      await this.database.executeSql(query, [rol.id, rol.nombre]);
+    }
+  }
+
+
   async register(persona: any): Promise<boolean> {
     // Verifica los datos antes de intentar el registro
     if (!this.validarDatos(persona)) {
@@ -600,13 +635,22 @@ export class ServiciobdService {
       this.AlertasService.presentAlert('Error', 'RUT y contraseña son obligatorios');
       return null;
     }
-
+  
     const query = `SELECT * FROM persona WHERE rut = ? AND clave = ?`;
     try {
+      // Imprime los valores de rut y password para verificar
+      console.log(`Intentando login con RUT: ${rut.trim()} y contraseña: ${password}`);
+  
       const res = await this.database.executeSql(query, [rut.trim(), password]);
+  
+      // Verifica si la consulta SQL devuelve algún resultado
+      console.log(`Resultado de la consulta de login:`, res.rows);
+  
       if (res.rows.length > 0) {
-        return res.rows.item(0); // Usuario encontrado
+        console.log('Usuario encontrado:', res.rows.item(0)); // Usuario encontrado, imprime los datos
+        return res.rows.item(0); // Retorna el usuario encontrado
       } else {
+        console.log('Usuario no encontrado: RUT o contraseña incorrectos');
         return null;
       }
     } catch (error) {
@@ -615,6 +659,8 @@ export class ServiciobdService {
       return null;
     }
   }
+  
+
 
   // Crear tabla si no existe
   crearTablaPersona() {
@@ -713,7 +759,7 @@ export class ServiciobdService {
       await this.database.executeSql(sql, valores);
   
     } catch (error) {
-      console.error('Error al insertar usuario predeterminado:', error);
+      alert('Error al insertar usuario predeterminado:'+ error);
       throw error;
     }
   }
@@ -750,25 +796,71 @@ export class ServiciobdService {
   }
 
 
-  async obtenerUltimaEmergencia() {
+  async obtenerUltimaConfirmacionConDetalles(): Promise<any> {
+    const query = `
+      SELECT c.estado_confirmacion, c.fecha_confirmacion, 
+             p.nombres AS nombreMedico, p.apellidos AS apellidoMedico, 
+             e.motivo AS motivoEmergencia, e.observaciones AS observacionesEmergencia
+      FROM confirmacion c
+      INNER JOIN persona p ON c.idPersona = p.idPersona
+      INNER JOIN emergencia e ON c.idEmerg = e.idEmerg
+      ORDER BY c.idConfirmacion DESC
+      LIMIT 1
+    `;
+    const resultado = await this.database.executeSql(query, []);
+    if (resultado.rows.length > 0) {
+      return resultado.rows.item(0);
+    }
+    return null;
+  }
+
+
+
+
+  async guardarConfirmacion(confirmacion: Confirmacion): Promise<void> {
+    const query = `
+      INSERT INTO confirmacion (idEmerg, idPersona, fecha_confirmacion, estado_confirmacion) 
+      VALUES (?, ?, ?, ?)
+    `;
+    
     try {
-      const res = await this.database.executeSql(
-        'SELECT * FROM emergencia ORDER BY idEmer DESC LIMIT 1',
-        []
-      );
-  
-      if (res.rows.length > 0) {
-        return res.rows.item(0); // Retorna la última fila encontrada
-      } else {
-        return null; // Si no hay resultados
-      }
+      await this.database.executeSql(query, [
+        confirmacion.idEmerg,
+        confirmacion.idPersona,
+        new Date().toISOString(), // fecha_confirmacion
+        confirmacion.estado_confirmacion
+      ]);
+      console.log('Confirmación guardada correctamente');
     } catch (error) {
-      console.error('Error al obtener la última emergencia:', error);
+      console.error('Error al guardar la confirmación:', error);
       throw error;
     }
   }
   
+  async obtenerUltimaConfirmacion(): Promise<any> {
+    const query = 'SELECT * FROM confirmacion ORDER BY idConfirmacion DESC LIMIT 1';
+    const resultado = await this.database.executeSql(query, []);
+    if (resultado.rows.length > 0) {
+      return resultado.rows.item(0);
+    }
+    return null;
+  }
+  async obtenerUltimaEmergencia(): Promise<any> {
+    const query = 'SELECT * FROM emergencia ORDER BY idEmerg DESC LIMIT 1';
+    try {
+       const resultado = await this.database.executeSql(query, []);
+       if (resultado.rows.length > 0) {
+          return resultado.rows.item(0); // Retorna la última emergencia
+       }
+       return null; // Si no hay resultados
+    } catch (error) {
+       console.error('Error al obtener la última emergencia:', error);
+       throw error;
+    }
+ }
+ 
 }
+  
 
 
 

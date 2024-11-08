@@ -3,7 +3,6 @@ import * as XLSX from 'xlsx';
 import { File } from '@awesome-cordova-plugins/file/ngx';
 import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
 import { ServiciobdService } from '../services/serviciobd.service';
-import { SignosVitales } from '../services/signosVitales.model'; // Importar la clase
 
 @Component({
   selector: 'app-historial-casos',
@@ -11,7 +10,7 @@ import { SignosVitales } from '../services/signosVitales.model'; // Importar la 
   styleUrls: ['./historial-casos.page.scss'],
 })
 export class HistorialCasosPage implements OnInit {
-  datosTabla: SignosVitales[] = []; // Usar la clase SignosVitales
+  datosTabla: any[] = [];
 
   constructor(
     private file: File,
@@ -26,8 +25,8 @@ export class HistorialCasosPage implements OnInit {
   // Obtener los datos desde la base de datos
   async cargarDatos() {
     try {
-      this.datosTabla = await this.bdService.obtenerTodosLosSignosVitales();
-      console.log('Datos cargados:', this.datosTabla);
+      this.datosTabla = await this.bdService.obtenerDatosConNombrePaciente();
+      console.log('Datos cargados:', this.datosTabla); // Verifica que "nombre" esté incluido en la consola
     } catch (error) {
       console.error('Error al cargar los datos:', error);
     }
@@ -36,6 +35,7 @@ export class HistorialCasosPage implements OnInit {
   // Generar el archivo Excel
   generarExcel() {
     const datosParaExcel = this.datosTabla.map((dato) => ({
+      Nombre: dato.nombre, // Incluye el nombre del paciente
       ID: dato.idSigno,
       'Frecuencia Cardiaca': dato.freq_cardiaca,
       'Presión Arterial': dato.presion_arterial,
@@ -62,7 +62,6 @@ export class HistorialCasosPage implements OnInit {
     try {
       const ruta = this.file.dataDirectory;
       await this.file.writeFile(ruta, nombreArchivo, data, { replace: true });
-
       await this.fileOpener.open(ruta + nombreArchivo, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       console.log('Archivo Excel abierto con éxito');
     } catch (error) {
