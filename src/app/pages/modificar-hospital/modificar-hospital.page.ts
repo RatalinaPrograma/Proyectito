@@ -51,10 +51,10 @@ export class ModificarHospitalPage implements OnInit {
   async modificarHospital() {
     try {
       const { idHospital, nombre, direccion } = this.hospital;
-      await this.bdService.modificarHospital(idHospital, nombre, direccion);
-      this.presentAlert('Éxito', 'Hospital modificado correctamente.');
+      const resp = await this.bdService.modificarHospital(idHospital, nombre, direccion);
+      this.presentAlert('Éxito', resp.message);
     } catch (error) {
-      this.presentAlert('Error', `Error al modificar el hospital: ${(error as any).message}`);
+      console.error(`Error al modificar el hospital: ${(error as any).message}`);
     }
   }
 

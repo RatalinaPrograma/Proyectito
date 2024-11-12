@@ -192,7 +192,6 @@ export class ServiciobdService {
         [freq_cardiaca, presion_arterial, temp_corporal, sat_oxigeno, freq_respiratoria, condiciones, operaciones, idSigno])
         .then(async res => {
           this.AlertasService.presentAlert("Modificar signos vitales", `Signos vitales modificados correctamente.`);
-          this.location.back();
         })
         .catch(e => {
           this.AlertasService.presentAlert("Modificar signos vitales", "Ocurrió un error: " + JSON.stringify(e));
@@ -390,7 +389,7 @@ export class ServiciobdService {
           return { code: 'OK', message: 'Paciente modificado', changes: res.rowsAffected };
         });
     }).catch(err => {
-      this.AlertasService.presentAlert("Modificar paciente", "Ocurrió un error: " + err.message);
+      console.error("Modificar paciente", "Ocurrió un error: " + err.message);
       return Promise.reject(new Error(`Error al modificar el paciente: ${err.message}`));
     });
   }
@@ -472,16 +471,8 @@ export class ServiciobdService {
         .then((res) => {
           console.log('Resultado de la modificación:', res); // Verifica si se realizó la modificación
           if (res.rowsAffected > 0) {
-            this.AlertasService.presentAlert(
-              'Modificar hospital',
-              'Hospital modificado correctamente.'
-            );
             return { message: 'Hospital modificado', changes: res.rowsAffected };
           } else {
-            this.AlertasService.presentAlert(
-              'Modificar hospital',
-              'No se realizaron cambios.'
-            );
             return { message: 'No se realizaron cambios', changes: res.rowsAffected };
           }
         });
@@ -503,7 +494,7 @@ export class ServiciobdService {
       if (res.rows.length > 0) {
         return res.rows.item(0);
       }
-      return null;
+      return;
     });
   }
 
@@ -611,7 +602,7 @@ export class ServiciobdService {
   async login(rut: string, password: string): Promise<any> {
     if (!rut || !password) {
       this.AlertasService.presentAlert('Error', 'RUT y contraseña son obligatorios');
-      return null;
+      return;
     }
   
     const query = `SELECT * FROM persona WHERE rut = ? AND clave = ?`;
@@ -634,7 +625,7 @@ export class ServiciobdService {
     } catch (error) {
       console.error('Error durante el login', error);
       this.AlertasService.presentAlert('Error', 'No se pudo iniciar sesión. Inténtelo más tarde');
-      return null;
+      return;
     }
   }
   

@@ -28,8 +28,6 @@ export class RegCausaEmergenciaPage implements OnInit {
     if (navigation?.extras.state) {
       this.idPaciente = navigation.extras.state['idPaciente'];
       this.rutPaciente = navigation.extras.state['rutPaciente'];
-      alert('ID del Paciente recibido: ' + this.idPaciente);
-      alert('RUT del Paciente recibido: ' + this.rutPaciente);
     }
   }
 
@@ -42,7 +40,6 @@ export class RegCausaEmergenciaPage implements OnInit {
   async obtenerRut() {
     try {
       this.rutPaciente = await this.serviciobd.obtenerRutPorIdPaciente(this.idPaciente);
-      alert('RUT obtenido: ' + this.rutPaciente);
     } catch (error) {
       console.error('Error al obtener el RUT:', error);
       const alert = await this.alertController.create({
@@ -55,13 +52,6 @@ export class RegCausaEmergenciaPage implements OnInit {
   }
 
   async guardarDetalles() {
-    alert('Iniciando proceso de guardar detalles');
-    alert('Valor de idPaciente: ' + this.idPaciente);
-    alert('Rut del paciente: ' + this.rutPaciente);
-    alert('Motivo: ' + this.motivo);
-    alert('Descripción del motivo: ' + this.descripcionMotivo);
-    alert('Notas: ' + this.notas);
-
     if (!this.motivo || !this.descripcionMotivo || !this.notas) {
       const alert = await this.alertController.create({
         header: 'Campos Incompletos',

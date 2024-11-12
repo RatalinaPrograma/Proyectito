@@ -40,7 +40,10 @@ export class EnvioInfoPage implements OnInit {
         res.edad = new Date().getFullYear() - new Date(res.f_nacimiento).getFullYear();
         this.paciente = res;
       })
-      .catch( (error) => alert(`ERROR ${error}`));
+      .catch( (error) => {
+        console.error(`ERROR ${error}`)
+        alert('ERROR al tratar de obtener al paciente.')
+      });
   }
 
   ngOnInit() {

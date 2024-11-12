@@ -60,7 +60,7 @@ export class CrudPacientesPage implements OnInit, OnDestroy, ViewWillEnter {
       })
       .catch((error) => {
         console.error(`ERROR ${error}`);
-        alert(`ERROR ${error}`);
+        alert(`ERROR al tratar de obtener pacientes.`);
       });
   }
   
@@ -170,7 +170,7 @@ export class CrudPacientesPage implements OnInit, OnDestroy, ViewWillEnter {
           this.listarPacientes();
         })
         .catch((error) => { 
-          alert(`ERROR ${error}`); 
+          console.log(`ERROR ${error}`); 
         });
     }
   }
@@ -190,7 +190,7 @@ export class CrudPacientesPage implements OnInit, OnDestroy, ViewWillEnter {
         }
       })
       .catch((error) => {
-        alert(`ERROR ${error}`);
+        alert(`ERROR al tratar de obtener paciente.`);
       });
   }
 
@@ -220,11 +220,6 @@ export class CrudPacientesPage implements OnInit, OnDestroy, ViewWillEnter {
     } else {
       this.router.navigate(['/agregar-signos-vitales', rut]);
     }
-  }
-
-  AlertaMama(){
-    alert('Se ha enviado una alerta a la madre del paciente');
-    this.router.navigate(['/agregar-pacientes']);
   }
 
 }

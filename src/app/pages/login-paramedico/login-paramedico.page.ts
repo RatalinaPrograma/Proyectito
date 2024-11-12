@@ -31,7 +31,6 @@ export class LoginParamedicoPage {
       console.log('Usuario inicial insertado o ya existente.');
     } catch (error) {
       console.error('Error al insertar usuario inicial:', error);
-      await this.alertasb.presentAlert('Error', 'No se pudo insertar el usuario inicial.');
     }
   }
 

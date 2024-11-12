@@ -53,7 +53,7 @@ export class CrudHospitalPage implements OnInit, OnDestroy, ViewWillEnter {
       })
       .catch((error) => {
         console.error(`ERROR ${error}`);
-        alert(`ERROR ${error}`);
+        alert(`ERROR al tratar de cargar hospitales.`);
       });
   }
 
@@ -65,7 +65,8 @@ export class CrudHospitalPage implements OnInit, OnDestroy, ViewWillEnter {
           this.alertasService.presentAlert('Eliminar hospital', 'Hospital eliminado correctamente.');
         })
         .catch((error) => {
-          alert(`ERROR ${error}`);
+          console.error(`ERROR ${error}`);
+          alert(`ERROR al tratar de eliminar el hospital.`);
         });
     }
   }
