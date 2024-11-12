@@ -45,7 +45,7 @@ export class ModificarSignosVitalesComponent  implements OnInit {
         this.idSignosVitales = signosVitales.idSigno || 0;
         this.signosVitales = signosVitales;
       } else {
-        await this.presentAlert('Error', 'Usuario no encontrado.');
+        await this.presentAlert('Error', `No se encontraron signos vitales para este paciente con rut ${this.rut}.`);
       }
     } catch (error) {
       console.error('Error al cargar datos:', error);
@@ -122,10 +122,9 @@ export class ModificarSignosVitalesComponent  implements OnInit {
         condiciones,
         operaciones
       );
-      this.presentAlert('Éxito', 'Signos vitales modificados correctamente.');
       this.location.back(); // Regresar a la página anterior
     } catch (error) {
-      this.presentAlert('Error', `Error al modificar los signos vitales: ${(error as any).message}`);
+      console.error('Error', `Error al modificar los signos vitales: ${(error as any).message}`);
     }
   }
   

@@ -47,7 +47,7 @@ export class CrudUsuariosPage implements  OnInit, OnDestroy {
       })
       .catch((error) => {
         console.error(`ERROR ${error}`); // Depuración
-        alert(`ERROR ${error}`);
+        alert(`ERROR al tratar de obtener usuarios.`);
       });
   }
 
@@ -66,7 +66,8 @@ export class CrudUsuariosPage implements  OnInit, OnDestroy {
           this.listarPersonas();
         })
         .catch((error) => {
-          alert(`ERROR ${error}`);
+          console.log(`ERROR ${error}`);
+          alert('ERROR al tratar de eliminar usuario.')
         });
     }
   }

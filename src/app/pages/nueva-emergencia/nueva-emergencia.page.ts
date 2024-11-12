@@ -95,7 +95,6 @@ export class NuevaEmergenciaPage implements OnInit {
   
     } catch (error) {
       console.error('Error al guardar el paciente:', error);
-      alert('Hubo un problema al guardar el paciente. Por favor, intenta nuevamente.');
     }
   }
   

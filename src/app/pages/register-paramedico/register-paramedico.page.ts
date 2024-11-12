@@ -44,7 +44,7 @@ export class RegisterParamedicoPage {
       this.resetFormulario(); // Limpia el formulario después de un registro exitoso
       this.irLogin(); // Redirige al login después del registro exitoso
     } else {
-      this.alertasService.presentAlert('Error en registro', 'Este usuario ya está registrado.');
+      console.error('Error en registro', 'Este usuario ya está registrado.');
       this.resetFormulario(); // Limpia todos los datos si el usuario ya está registrado
     }
   }

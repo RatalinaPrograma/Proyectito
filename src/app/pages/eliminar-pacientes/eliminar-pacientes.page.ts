@@ -27,10 +27,9 @@ export class EliminarPacientesPage implements OnInit {
   eliminarpaciente(){
     this.servicebd.eliminarPaciente(this.paciente.rut)
       .then( (res) => {
-        alert("EXITO");
         this.router.navigate(['/crud-pacientes', this.paciente.rut]);
       })
-      .catch( (error) => alert(`ERROR ${error}`));
+      .catch( (error) => console.log(`ERROR ${error}`));
   }
 
 
