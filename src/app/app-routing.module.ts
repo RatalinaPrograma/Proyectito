@@ -20,7 +20,7 @@ const routes: Routes = [
     loadChildren: () => import('./pages/reg-detallesmedicos/reg-detallesmedicos.module').then( m => m.RegDetallesmedicosPageModule)
   },
   {
-    path: 'reg-causaemergencia',
+    path: 'reg-causaemergencia/:idPaciente',
     loadChildren: () => import('./pages/reg-causaemergencia/reg-causaemergencia.module').then( m => m.RegCausaemergenciaPageModule)
   },
   {
@@ -162,9 +162,18 @@ const routes: Routes = [
     loadChildren: () => import('./pages/conf-recep/conf-recep.module').then( m => m.ConfRecepPageModule)
   },
   {
+    path: 'verificar-codigo',
+    loadChildren: () => import('./pages/verificar-codigo/verificar-codigo.module').then( m => m.VerificarCodigoPageModule)
+  },
+  {
+    path: 'restablecer-contrasena',
+    loadChildren: () => import('./pages/restablecer-contrasena/restablecer-contrasena.module').then( m => m.RestablecerContrasenaPageModule)
+  },
+  {
     path: '**',
     loadChildren: () => import('./pages/not-found/not-found.module').then( m => m.NotFoundPageModule)
   },
+
 
 
 

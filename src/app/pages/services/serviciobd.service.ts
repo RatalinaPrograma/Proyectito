@@ -22,32 +22,6 @@ export class ServiciobdService {
     throw new Error('Method not implemented.');
   }
 
-  // Verificar si un usuario existe por RUT
-  private async verificarUsuario(rut: string): Promise<boolean> {
-    const query = 'SELECT COUNT(1) as count FROM persona WHERE rut = ?';
-    try {
-      const res = await this.database.executeSql(query, [rut]);
-      return res.rows.item(0).count > 0;
-    } catch (error) {
-      console.error('Error al verificar usuario', error);
-      throw new Error('No se pudo verificar el usuario');
-    }
-  }
-
-  public async convertirBlobABase64(blob: Blob): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        resolve(base64String);
-      };
-      reader.onerror = (error) => {
-        console.error('Error al convertir BLOB a Base64:', error);
-        reject(error);
-      };
-    });
-  }
   public database!: SQLiteObject;
   isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private dbIsCreated: boolean = false;
@@ -73,7 +47,7 @@ export class ServiciobdService {
 
   tablaTrabajador: string = "CREATE TABLE IF NOT EXISTS trabajador(idTrab INTEGER PRIMARY KEY AUTOINCREMENT, idambulancia INTEGER, idPersona INTEGER, FOREIGN KEY (idambulancia) REFERENCES ambulancia(idambulancia), FOREIGN KEY (idPersona) REFERENCES persona(idPersona));";
 
-  tablaEmergencia: string = "CREATE TABLE IF NOT EXISTS emergencia(idEmerg INTEGER PRIMARY KEY AUTOINCREMENT, fecha_emer DATE NOT NULL, motivo VARCHAR(255), desc_motivo TEXT, observaciones TEXT, estado VARCHAR(50), f_recepcion DATE, idambulancia INTEGER, idTriage INTEGER, idHospital INTEGER, FOREIGN KEY (idambulancia) REFERENCES ambulancia(idambulancia), FOREIGN KEY (idTriage) REFERENCES triage(idTriage), FOREIGN KEY (idHospital) REFERENCES hospital(idHospital));";
+  tablaEmergencia: string = "CREATE TABLE IF NOT EXISTS emergencia(idEmerg INTEGER PRIMARY KEY AUTOINCREMENT, fecha_emer DATE NOT NULL, motivo VARCHAR(255), desc_motivo TEXT, observaciones TEXT, estado VARCHAR(50), f_recepcion DATE, idambulancia INTEGER, idTriage INTEGER, idHospital INTEGER, idPaciente INTEGER, FOREIGN KEY (idambulancia) REFERENCES ambulancia(idambulancia), FOREIGN KEY (idTriage) REFERENCES triage(idTriage), FOREIGN KEY (idHospital) REFERENCES hospital(idHospital), FOREIGN KEY (idPaciente) REFERENCES paciente(idPaciente));";
 
   tablaDetalle: string = "CREATE TABLE IF NOT EXISTS detalle(idDetalle INTEGER PRIMARY KEY AUTOINCREMENT, idEmerg INTEGER, idPaciente INTEGER, FOREIGN KEY (idEmerg) REFERENCES emergencia(idEmerg), FOREIGN KEY (idPaciente) REFERENCES paciente(idPaciente));";
 
@@ -115,6 +89,10 @@ export class ServiciobdService {
         this.database = db;
         // await db.executeSql('DROP TABLE IF EXISTS persona;', []);
         // await db.executeSql('DROP TABLE IF EXISTS paciente;', []);
+        await this.database.executeSql('DROP TABLE IF EXISTS emergencia', []);
+        await this.database.executeSql(this.tablaEmergencia, []);
+        
+
         this.crearTablas();
         this.isDBReady.next(true);
         this.dbIsCreated = true;
@@ -764,6 +742,60 @@ export class ServiciobdService {
     }
   }
   
+  // Verificar si un usuario existe por RUT
+  private async verificarUsuario(rut: string): Promise<boolean> {
+    const query = 'SELECT COUNT(1) as count FROM persona WHERE rut = ?';
+    try {
+      const res = await this.database.executeSql(query, [rut]);
+      return res.rows.item(0).count > 0;
+    } catch (error) {
+      console.error('Error al verificar usuario', error);
+      throw new Error('No se pudo verificar el usuario');
+    }
+  }
+
+  public async convertirBlobABase64(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        resolve(base64String);
+      };
+      reader.onerror = (error) => {
+        console.error('Error al convertir BLOB a Base64:', error);
+        reject(error);
+      };
+    });
+  }
+
+  async modificarClave(idPersona: number, nuevaClave: string): Promise<void> {
+    const query = `UPDATE persona SET clave = ? WHERE idPersona = ?`;
+    try {
+      await this.database.executeSql(query, [nuevaClave, idPersona]);
+      console.log('Contraseña actualizada correctamente para el usuario con ID:', idPersona);
+    } catch (error) {
+      console.error('Error al actualizar la contraseña:', error);
+      throw new Error('No se pudo actualizar la contraseña');
+    }
+  }
+  
+  async obtenerUsuarioPorCorreoYRut(correo: string, rut: string): Promise<any> {
+    const query = 'SELECT * FROM persona WHERE correo = ? AND rut = ?';
+    try {
+      const res = await this.database.executeSql(query, [correo, rut]);
+      if (res.rows.length > 0) {
+        return res.rows.item(0); // Retorna el usuario si ambos valores coinciden
+      }
+      return null; // Retorna null si no hay coincidencias
+    } catch (error) {
+      console.error('Error al obtener usuario por correo y RUT:', error);
+      throw error;
+    }
+  }
+  
+  
+  
 
   
 
@@ -845,20 +877,94 @@ export class ServiciobdService {
     }
     return null;
   }
-  async obtenerUltimaEmergencia(): Promise<any> {
-    const query = 'SELECT * FROM emergencia ORDER BY idEmerg DESC LIMIT 1';
-    try {
-       const resultado = await this.database.executeSql(query, []);
-       if (resultado.rows.length > 0) {
-          return resultado.rows.item(0); // Retorna la última emergencia
-       }
-       return null; // Si no hay resultados
-    } catch (error) {
-       console.error('Error al obtener la última emergencia:', error);
-       throw error;
+
+ async obtenerUltimasEmergenciasActivas(): Promise<any[]> {
+  const query = `
+    SELECT e.*, p.nombre AS nombrePaciente
+    FROM emergencia e
+    INNER JOIN paciente p ON e.idPaciente = p.idPaciente
+    WHERE e.estado = 'activo' 
+    ORDER BY e.fecha_emer DESC 
+    LIMIT 2
+  `;
+  try {
+    const resultado = await this.database.executeSql(query, []);
+    const emergencias = [];
+    for (let i = 0; i < resultado.rows.length; i++) {
+      emergencias.push(resultado.rows.item(i));
     }
- }
- 
+    console.log('Emergencias activas obtenidas:', emergencias); // Depuración
+    return emergencias;
+  } catch (error) {
+    console.error('Error al obtener emergencias activas:', error);
+    throw error;
+  }
+}
+
+
+// En ServiciobdService
+async actualizarEstadoEmergencia(idEmerg: number, nuevoEstado: string): Promise<void> {
+  const query = 'UPDATE emergencia SET estado = ? WHERE idEmerg = ?';
+  try {
+    await this.database.executeSql(query, [nuevoEstado, idEmerg]);
+    console.log(`Estado de emergencia con ID ${idEmerg} actualizado a ${nuevoEstado}`);
+  } catch (error) {
+    console.error('Error al actualizar el estado de la emergencia:', error);
+    throw error;
+  }
+}
+
+async agregarEmergencia(motivo: string, descripcionMotivo: string, notas: string, idPaciente: number): Promise<void> {
+  const fechaEmergencia = new Date().toISOString(); // Fecha actual en formato ISO
+  const estado = 'activo'; // Definir estado inicial de la emergencia
+
+  const query = `
+    INSERT INTO emergencia (fecha_emer, motivo, desc_motivo, observaciones, estado, idPaciente)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `;
+
+  try {
+    await this.database.executeSql(query, [fechaEmergencia, motivo, descripcionMotivo, notas, estado, idPaciente]);
+    console.log('Emergencia guardada correctamente');
+  } catch (error) {
+    console.error('Error al guardar la emergencia en la base de datos:', error);
+    throw error; // Lanza el error para que el componente pueda manejarlo
+  }
+}
+
+
+
+
+async obtenerUltimaEmergencia(): Promise<any> {
+  const query = 'SELECT * FROM emergencia ORDER BY idEmerg DESC LIMIT 1';
+  try {
+    const resultado = await this.database.executeSql(query, []);
+    if (resultado.rows.length > 0) {
+      return resultado.rows.item(0); // Retorna la última emergencia
+    }
+    return null; // Si no hay resultados
+  } catch (error) {
+    console.error('Error al obtener la última emergencia:', error);
+    throw error;
+  }
+}
+
+async obtenerRutPorIdPaciente(idPaciente: number): Promise<string | null> {
+  const query = `SELECT rut FROM paciente WHERE idPaciente = ?`;
+  try {
+    const resultado = await this.database.executeSql(query, [idPaciente]);
+    if (resultado.rows.length > 0) {
+      return resultado.rows.item(0).rut;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error al obtener el RUT:', error);
+    throw error;
+  }
+}
+
+
+
 }
   
 

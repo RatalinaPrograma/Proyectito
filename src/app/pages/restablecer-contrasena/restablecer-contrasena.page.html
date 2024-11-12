@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="start">
+      <ion-menu-button menu="emergenciasMenu"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Restablecer Contraseña</ion-title>
+    <ion-buttons slot="end">
+      <ion-img src="/assets/img/2.png" class="logo-img"></ion-img>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+<!-- restablecer-contrasena.component.html -->
+<form (submit)="restablecerContrasena()">
+  <ion-item>
+    <ion-label position="floating">Nueva Contraseña</ion-label>
+    <ion-input type="password" [(ngModel)]="nuevaContrasena" required></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">Confirmar Contraseña</ion-label>
+    <ion-input type="password" [(ngModel)]="confirmarContrasena" required></ion-input>
+  </ion-item>
+  <ion-button expand="block" type="submit">Restablecer Contraseña</ion-button>
+</form>
+
+</ion-content>

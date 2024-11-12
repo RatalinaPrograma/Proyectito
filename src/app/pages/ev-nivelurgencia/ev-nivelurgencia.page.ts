@@ -19,7 +19,7 @@ export class EvNivelurgenciaPage implements OnInit {
     // Verificar si la casilla de confirmación está marcada
     if (this.confirmacion) {
       // Si está marcada, continuar a la siguiente página
-      this.router.navigate(['/reg-causaemergencia']);
+      this.router.navigate(['/paciente-existe']);
     } else {
       // Si no está marcada, mostrar una alerta
       const alert = await this.alertController.create({

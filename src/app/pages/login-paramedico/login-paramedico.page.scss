@@ -72,3 +72,26 @@ ion-item a:hover {
   text-decoration: underline;
   text-align: center;
 }
+
+
+// Botón "Olvidé mi contraseña"
+.forgot-password-button {
+  --background: #6a0dad; // Color de fondo púrpura
+  --background-hover: #4b0082; // Color de fondo al hacer hover
+  --color: white; // Texto en blanco
+  --border-radius: 12px; // Borde redondeado
+  font-weight: bold; // Texto en negrita
+  font-size: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 1.5rem;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); // Sombra
+
+  // Transiciones para hacer el botón más fluido
+  transition: background 0.3s ease, transform 0.2s ease;
+
+  // Escala el botón al hacer hover
+  &:hover {
+    transform: scale(1.05);
+  }
+}

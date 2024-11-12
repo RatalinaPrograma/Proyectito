@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { ServiciobdService } from '../pages/services/serviciobd.service';
 
 @Component({
   selector: 'app-home',
@@ -11,18 +12,22 @@ export class HomePage implements OnInit {
 
   horaActual: string | undefined;
   idRolUsuario: number | undefined;
-  emergenciasActivas = [
-    { titulo: 'Incendio en Edificio A', descripcion: 'Se reporta un incendio en el cuarto piso.' },
-    { titulo: 'Accidente de Tráfico', descripcion: 'Colisión múltiple en la autopista.' }
-  ];
-  constructor(private navCtrl: NavController, private router: Router) {}
+  constructor(private navCtrl: NavController, private router: Router, private serviciobd: ServiciobdService
+  ) {}
 
-  ngOnInit() {
+  emergenciasActivas: any[] = [];
+  async ngOnInit() {
     this.actualizarHora();
     setInterval(() => {
       this.actualizarHora();
     }, 1000); // Actualiza la hora cada segundo
     this.obtenerRolUsuario();
+    try {
+      this.emergenciasActivas = await this.serviciobd.obtenerUltimasEmergenciasActivas();
+      console.log('Emergencias activas en el Home:', this.emergenciasActivas); // Depuración
+    } catch (error) {
+      console.error('Error al obtener emergencias activas:', error);
+    }
   }
 
   obtenerRolUsuario() {
@@ -82,6 +87,24 @@ export class HomePage implements OnInit {
   irSP() {
     // Navega a la página de soporte técnico
     this.navCtrl.navigateRoot('/soporte-tecnico');
+  }
+
+  async cargarEmergenciasActivas() {
+    try {
+      this.emergenciasActivas = await this.serviciobd.obtenerUltimasEmergenciasActivas();
+    } catch (error) {
+      console.error('Error al cargar emergencias activas:', error);
+    }
+  }
+
+
+  async cambiarEstadoEmergencia(idEmerg: number, nuevoEstado: string) {
+    try {
+      await this.serviciobd.actualizarEstadoEmergencia(idEmerg, nuevoEstado);
+      this.emergenciasActivas = await this.serviciobd.obtenerUltimasEmergenciasActivas(); // Actualiza la lista
+    } catch (error) {
+      console.error('Error al cambiar el estado de la emergencia:', error);
+    }
   }
 
 }

@@ -4,6 +4,8 @@ import { File } from '@awesome-cordova-plugins/file/ngx';
 import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
 import { ServiciobdService } from '../services/serviciobd.service';
 
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-historial-casos',
   templateUrl: './historial-casos.page.html',
@@ -15,12 +17,16 @@ export class HistorialCasosPage implements OnInit {
   constructor(
     private file: File,
     private fileOpener: FileOpener,
-    private bdService: ServiciobdService // Inyectar el servicio de base de datos
+    private bdService: ServiciobdService, // Inyectar el servicio de base de datos
+
+    private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.obtenerRolUsuario();
     this.cargarDatos(); // Cargar los datos al inicializar la página
   }
+  idRolUsuario: number | undefined;
 
   // Obtener los datos desde la base de datos
   async cargarDatos() {
@@ -68,4 +74,24 @@ export class HistorialCasosPage implements OnInit {
       console.error('Error al guardar o abrir el archivo:', error);
     }
   }
+
+  obtenerRolUsuario() {
+    const usuario1 = localStorage.getItem('usuario');
+    if (usuario1) {
+      const usuario = JSON.parse(usuario1);
+      this.idRolUsuario = usuario.rol;
+    }
+  }
+
+  async goBack() {
+    let rol = 0;
+    rol = this.idRolUsuario || 0;
+    
+    if ( rol === 1 || rol === 2) {
+      this.router.navigate(['/home']);
+    } else if (rol === 3) {
+      this.router.navigate(['/vista-medico']);
+    }
+  }
+  
 }

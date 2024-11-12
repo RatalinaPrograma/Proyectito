@@ -22,18 +22,21 @@
       <ion-card-title>Emergencias Activas</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <!-- Aquí se listarán las emergencias activas -->
-      <ion-list>
+      <ion-list *ngIf="emergenciasActivas.length > 0; else noEmergencias">
         <ion-item *ngFor="let emergencia of emergenciasActivas">
           <ion-label>
-            <h2>{{ emergencia.titulo }}</h2>
-            <p>{{ emergencia.descripcion }}</p>
+            <h2>{{ emergencia.motivo }}</h2>
+            <p>{{ emergencia.desc_motivo }}</p>
+            <p><strong>Estado:</strong> {{ emergencia.estado }}</p>
           </ion-label>
         </ion-item>
       </ion-list>
+      <ng-template #noEmergencias>
+        <p style="text-align: center;">No hay emergencias activas en este momento.</p>
+      </ng-template>
     </ion-card-content>
   </ion-card>
-
+  
   <ion-grid>
     <ion-row>
       <ion-col size="12" size-md="4">
