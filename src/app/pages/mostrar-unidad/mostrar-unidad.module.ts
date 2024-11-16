@@ -4,17 +4,17 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { ModificarUnidadPageRoutingModule } from './modificar-unidad-routing.module';
+import { MostrarUnidadPageRoutingModule } from './mostrar-unidad-routing.module';
 
-import { ModificarUnidadPage } from './modificar-unidad.page';
+import { MostrarUnidadPage } from './mostrar-unidad.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ModificarUnidadPageRoutingModule
+    MostrarUnidadPageRoutingModule
   ],
-  declarations: [ModificarUnidadPage]
+  declarations: [MostrarUnidadPage]
 })
-export class ModificarUnidadPageModule {}
+export class MostrarUnidadPageModule {}

@@ -1,14 +1,20 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RegCausaemergenciaPage } from './reg-causaemergencia.page';
+import { TestBed } from '@angular/core/testing';
+import { RegCausaEmergenciaPage } from './reg-causaemergencia.page';
+import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 
-describe('RegCausaemergenciaPage', () => {
-  let component: RegCausaemergenciaPage;
-  let fixture: ComponentFixture<RegCausaemergenciaPage>;
+describe('RegCausaEmergenciaPage', () => {
+  let component: RegCausaEmergenciaPage;
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(RegCausaemergenciaPage);
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [RegCausaEmergenciaPage],
+      providers: [
+        { provide: SQLite, useValue: {} }, // Mock del servicio SQLite
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(RegCausaEmergenciaPage);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {

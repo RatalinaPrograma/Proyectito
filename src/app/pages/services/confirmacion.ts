@@ -1,6 +1,6 @@
-// confirmacion.model.ts
+
 export class Confirmacion {
-    idConfirmacion?: number; // Opcional, porque se generará automáticamente
+    idConfirmacion?: number; 
     idEmerg: number;
     idPersona: number;
     fecha_confirmacion: Date;

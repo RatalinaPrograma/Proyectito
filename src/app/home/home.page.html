@@ -50,7 +50,7 @@
         </ion-button>
       </ion-col>
       <ion-col size="12" size-md="4" *ngIf="idRolUsuario === 1">
-        <ion-button expand="block" class="btn-verde-pastel" routerLink="/configuracion-unidad" routerDirection="root">
+        <ion-button expand="block" class="btn-verde-pastel" routerLink="/buscar-ambulancia" routerDirection="root">
           Configuración Unidad
         </ion-button>
       </ion-col>
@@ -87,7 +87,16 @@
       </ion-col>
     </ion-row>
   </ion-grid>
-
+  <ion-col size="12" size-md="4">
+    <ion-button expand="block" class="btn-azul-claro" (click)="abrirNavegador()">
+      Ir a Pagina Web Clinica Davila
+    </ion-button>
+  </ion-col>
+  <ion-col size="12" size-md="4">
+    <ion-button expand="block" class="btn-verde-claro" (click)="abrirNavegador2()">
+      Ir a Pagina Web Hospital San José
+    </ion-button>  
+  </ion-col>
   <ion-item>
     <ion-card>
       <img alt="Paramedicos" src="/assets/img/paramedicos.avif" />

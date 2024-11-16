@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="start">
+      <ion-menu-button menu="emergenciasMenu"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Ver Detalles de la unidad</ion-title>
+    <ion-buttons slot="end">
+      <ion-img src="/assets/img/2.png" class="logo-img"></ion-img>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card *ngIf="unidad">
+    <ion-card-header>
+      <ion-card-title>Detalles de la Ambulancia</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>Patente:</strong> {{ unidad.patente }}</p>
+      <p><strong>Equipada:</strong> {{ unidad.equipada ? 'Sí' : 'No' }}</p>
+      <p><strong>Fecha de Mantenimiento:</strong> {{ unidad.fec_mant | date }}</p>
+      <p><strong>Estado:</strong> {{ unidad.estadoNombre }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-button expand="block" color="primary" [routerLink]="['/editar-unidad', unidad.idambulancia]">
+    Editar Ambulancia
+  </ion-button>
+  <ion-button expand="block" color="primary" [routerLink]="['/home]">
+    Ir al Home
+  </ion-button>
+
+</ion-content>

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { ServiciobdService } from '../pages/services/serviciobd.service';
+import { Browser } from '@capacitor/browser';
 
 @Component({
   selector: 'app-home',
@@ -105,6 +106,14 @@ export class HomePage implements OnInit {
     } catch (error) {
       console.error('Error al cambiar el estado de la emergencia:', error);
     }
+  }
+
+  async abrirNavegador() {
+    await Browser.open({ url: 'https://www.davila.cl' });
+  }
+
+  async abrirNavegador2() {
+    await Browser.open({ url: 'https://complejohospitalariosanjose.cl' });
   }
 
 }

@@ -13,58 +13,65 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="background" style="--background: url('/assets/imgs/emergencias-fondo.png') no-repeat center center / cover;">
-  
-  <!-- Sección de Detalles de la Ambulancia -->
+<ion-content [fullscreen]="true">
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Detalles de la Ambulancia</ion-card-title>
+      <ion-card-title>Ingresar Detalles de la Ambulancia</ion-card-title>
     </ion-card-header>
     <ion-card-content>
+      
+      <!-- Campo: Patente -->
       <ion-item>
-        <ion-label position="stacked">Número de Unidad</ion-label>
-        <ion-text>AMB-1024</ion-text>
+        <ion-label position="stacked">Patente</ion-label>
+        <ion-input placeholder="Ejemplo: ABCD12" [(ngModel)]="patente"></ion-input>
       </ion-item>
-    </ion-card-content>
-  </ion-card>
-  
-  <!-- Sección de Estado de la Unidad -->
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Estado de la Unidad</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
+
+      <!-- Campo: Confirmar Patente -->
+      <ion-item>
+        <ion-label position="stacked">Confirmar Patente</ion-label>
+        <ion-input placeholder="Vuelva a ingresar la patente" [(ngModel)]="patenteConfirmacion"></ion-input>
+      </ion-item>
+      <ion-text color="danger" *ngIf="!patenteCoincide && patenteConfirmacion">
+        Las patentes no coinciden
+      </ion-text>
+
+      <!-- Campo: Equipada -->
+      <ion-item>
+        <ion-label>¿Equipada?</ion-label>
+        <ion-toggle [(ngModel)]="equipada"></ion-toggle>
+      </ion-item>
+
+      <!-- Campo: Fecha de Mantenimiento -->
+      <ion-item>
+        <ion-label position="stacked">Fecha de Mantenimiento</ion-label>
+        <ion-datetime
+          display-format="DD/MM/YYYY"
+          [(ngModel)]="fec_mant">
+        </ion-datetime>
+      </ion-item>
+
+      <!-- Campo: Estado -->
       <ion-item>
         <ion-label position="stacked">Estado</ion-label>
-        <ion-text>En Servicio</ion-text>
-      </ion-item>
-      <ion-item>
-        <ion-label position="stacked">Fecha Mantenimiento</ion-label>
-        <ion-text>01/08/2024</ion-text>
-      </ion-item>
-    </ion-card-content>
-  </ion-card>
-  
-  <!-- Sección de Configuración de Disponibilidad -->
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Configuración de Disponibilidad</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-item>
-        <ion-label>Disponible para Nuevos Casos</ion-label>
-        <ion-toggle [(ngModel)]="disponibleParaCasos"></ion-toggle>
+        <ion-select [(ngModel)]="idestado" placeholder="Seleccionar Estado">
+          <ion-select-option *ngFor="let estado of estados" [value]="estado.idestado">
+            {{ estado.nombre }}
+          </ion-select-option>
+        </ion-select>
       </ion-item>
     </ion-card-content>
   </ion-card>
-  
-  <!-- Botones de Acción -->
+
   <ion-footer>
     <ion-toolbar>
-      <ion-button expand="block" color="primary" class="btn-azul-claro">Guardar Configuración</ion-button>
+      <ion-button expand="block" color="primary" (click)="guardarAmbulancia()" [disabled]="!patenteCoincide">
+        Guardar Ambulancia
+      </ion-button>
+      <ion-button expand="block" color="primary" [routerLink]="['/mostrar-unidad', idUnidad]" [disabled]="!idUnidad">
+        Ver Ambulancia
+      </ion-button>      
     </ion-toolbar>
   </ion-footer>
-
 </ion-content>
 
 <ion-footer class="custom-footer">

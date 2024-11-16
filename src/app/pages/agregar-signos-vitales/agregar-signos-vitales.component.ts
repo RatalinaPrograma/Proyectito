@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ServiciobdService } from '../services/serviciobd.service';
 import { AlertController } from '@ionic/angular';
 import { Location } from '@angular/common';
@@ -28,7 +28,9 @@ export class AgregarSignosVitalesComponent  implements OnInit {
     private route: ActivatedRoute, 
     private bdService: ServiciobdService,
     private alertController: AlertController,
-    private location: Location
+    private location: Location,
+
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -104,8 +106,9 @@ export class AgregarSignosVitalesComponent  implements OnInit {
         operaciones,
         this.rut
       );
-      alert('Éxito'+ 'Signos vitales agregados correctamente.');
-      this.location.back(); // Regresar a la página anterior
+
+      alert('Signos vitales agregados correctamente.');
+      this.router.navigate(['/crud-pacientes']);
     } catch (error) {
       alert('Error'+ `Error al agregar los signos vitales: ${(error as any).message}`);
     }

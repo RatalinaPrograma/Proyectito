@@ -1,21 +1,21 @@
 import { TestBed } from '@angular/core/testing';
-import { AjustesPerfilParamedicoPage } from './ajustes-perfil-paramedico.page';
+import { BuscarAmbulanciaPage } from './buscar-ambulancia.page';
 import { ServiciobdService } from '../services/serviciobd.service';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 
-describe('AjustesPerfilParamedicoPage', () => {
-  let component: AjustesPerfilParamedicoPage;
+describe('BuscarAmbulanciaPage', () => {
+  let component: BuscarAmbulanciaPage;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AjustesPerfilParamedicoPage],
+      declarations: [BuscarAmbulanciaPage],
       providers: [
         { provide: ServiciobdService, useValue: {} }, // Mock del servicio
         { provide: SQLite, useValue: {} }, // Mock del SQLite
       ],
     }).compileComponents();
 
-    const fixture = TestBed.createComponent(AjustesPerfilParamedicoPage);
+    const fixture = TestBed.createComponent(BuscarAmbulanciaPage);
     component = fixture.componentInstance;
   });
 

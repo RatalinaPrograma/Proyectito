@@ -89,7 +89,7 @@ export class AgregarPacientesPage implements OnInit {
     } catch (error) {
       // Maneja cualquier error durante el guardado
       console.error('Error al guardar el paciente:', error);
-      alert('Hubo un problema al guardar el paciente. Por favor, intenta nuevamente.');
+
     }
   }
   

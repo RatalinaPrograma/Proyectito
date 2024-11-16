@@ -56,7 +56,8 @@ export class ServiciobdService {
   tablaDetalle_S: string = "CREATE TABLE IF NOT EXISTS detalle_s(idDetalleS INTEGER PRIMARY KEY AUTOINCREMENT, idDetalle INTEGER, idSigno INTEGER, valor VARCHAR(100), unidad VARCHAR(50), FOREIGN KEY (idDetalle) REFERENCES detalle(idDetalle), FOREIGN KEY (idSigno) REFERENCES signos_vitales(idSigno));";
 
   tablaConfirmacion: string = "CREATE TABLE IF NOT EXISTS confirmacion(idConfirmacion INTEGER PRIMARY KEY AUTOINCREMENT,idEmerg INTEGER,idPersona INTEGER,fecha_confirmacion DATE NOT NULL,estado_confirmacion BOOLEAN NOT NULL, FOREIGN KEY (idEmerg) REFERENCES emergencia(idEmerg),FOREIGN KEY (idPersona) REFERENCES persona(idPersona));"
-  
+
+  tablaEstado: string = "CREATE TABLE IF NOT EXISTS estado(idestado INTEGER PRIMARY KEY AUTOINCREMENT, nombre VARCHAR(100) NOT NULL);";
 
   listadoPacientes: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
   listadoTrabajador: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
@@ -87,13 +88,12 @@ export class ServiciobdService {
         location: 'default'
       }).then(async (db: SQLiteObject) => {
         this.database = db;
+        this.crearTablas();
         // await db.executeSql('DROP TABLE IF EXISTS persona;', []);
         // await db.executeSql('DROP TABLE IF EXISTS paciente;', []);
-        await this.database.executeSql('DROP TABLE IF EXISTS emergencia', []);
-        await this.database.executeSql(this.tablaEmergencia, []);
-        
-
-        this.crearTablas();
+        // await this.database.executeSql('DROP TABLE IF EXISTS emergencia', []);
+        // await this.database.executeSql(this.tablaEmergencia, []);
+        await this.insertarEstadosIniciales();
         this.isDBReady.next(true);
         this.dbIsCreated = true;
         this.insertarUsuarioPredeterminado();
@@ -120,7 +120,8 @@ export class ServiciobdService {
       this.tablaEmergencia,
       this.tablaTriage,
       this.tablaPaciente,
-      this.tablaConfirmacion
+      this.tablaConfirmacion,
+      this.tablaEstado,
     ];
 
     tablas.forEach(tabla => {
@@ -158,13 +159,8 @@ export class ServiciobdService {
   agregarSignosV(freq_cardiaca: number, presion_arterial: string, temp_corporal: number, sat_oxigeno: number, freq_respiratoria: number, condiciones: string, operaciones: string, rutPaciente: string) {
     return this.database.executeSql('INSERT OR IGNORE INTO signos_vitales (freq_cardiaca, presion_arterial, temp_corporal, sat_oxigeno, freq_respiratoria,condiciones,operaciones) VALUES (?, ?, ?, ?, ?,?,?)', [freq_cardiaca, presion_arterial, temp_corporal, sat_oxigeno, freq_respiratoria, condiciones, operaciones])
       .then(async res => {
-        const agregadoSignoAPaciente = await this.agregarSignoAPaciente(rutPaciente, res.insertId);
-        if (agregadoSignoAPaciente.code === 'OK') {
-          this.AlertasService.presentAlert("Agregar signos vitales", `Signos vitales agregados correctamente. ID: ${res.insertId}`);
-          this.location.back();
-        } else {
-          this.AlertasService.presentAlert("Agregar signos vitales", agregadoSignoAPaciente.message);
-        }
+        await this.agregarSignoAPaciente(rutPaciente, res.insertId);
+
       })
       .catch(e => {
         this.AlertasService.presentAlert("Agregar signos vitales", "Ocurrió un error: " + JSON.stringify(e));
@@ -175,7 +171,6 @@ export class ServiciobdService {
     const query = `UPDATE paciente SET idSigno = ? WHERE rut = ?`;
     return this.database.executeSql(query, [idSigno, rutPaciente])
       .then(res => {
-        alert('Paciente modificado ' + res.rowsAffected + ' RUT: ' + rutPaciente + ' IDSIGNO: ' + idSigno)
         return { code: 'OK', message: 'Paciente modificado', changes: res.rowsAffected };
       })
       .catch(async e => {
@@ -287,7 +282,7 @@ export class ServiciobdService {
     return this.verificarPaciente(rut).then(existe => {
       if (existe) {
         // Si el paciente ya existe, mostramos una alerta
-        this.AlertasService.presentAlert(
+        console.log(
           "Agregar paciente",
           "El paciente con ese RUT ya está registrado."
         );
@@ -498,7 +493,7 @@ export class ServiciobdService {
     });
   }
 
-  
+
 
 
 
@@ -525,7 +520,7 @@ export class ServiciobdService {
       this.AlertasService.presentAlert('Error en registro', 'Datos incompletos o inválidos');
       return false;
     }
-  
+
     const query = `
       INSERT INTO persona (nombres, apellidos, rut, correo, clave, telefono, foto, idRol) 
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -540,24 +535,24 @@ export class ServiciobdService {
       persona.foto || null,
       persona.idRol,
     ];
-  
+
     try {
       await this.database.executeSql(query, values);
       return true;
     } catch (error) {
       console.error('Error al registrar usuario', error);
-  
+
       // Manejo de errores específicos
       if ((error as any).code === 'SQLITE_CONSTRAINT') {
         this.AlertasService.presentAlert('Error en registro', 'El RUT o correo ya están registrados.');
       } else {
         this.AlertasService.presentAlert('Error en registro', 'El registro falló. Verifique los datos');
       }
-  
+
       return false;
     }
   }
-  
+
 
   // Obtener persona por ID
   // Servicio: obtenerUsuario() en ServiciobdService
@@ -580,7 +575,7 @@ export class ServiciobdService {
   }
 
 
-  
+
 
 
   // Validación de los campos del usuario
@@ -604,17 +599,17 @@ export class ServiciobdService {
       this.AlertasService.presentAlert('Error', 'RUT y contraseña son obligatorios');
       return;
     }
-  
+
     const query = `SELECT * FROM persona WHERE rut = ? AND clave = ?`;
     try {
       // Imprime los valores de rut y password para verificar
       console.log(`Intentando login con RUT: ${rut.trim()} y contraseña: ${password}`);
-  
+
       const res = await this.database.executeSql(query, [rut.trim(), password]);
-  
+
       // Verifica si la consulta SQL devuelve algún resultado
       console.log(`Resultado de la consulta de login:`, res.rows);
-  
+
       if (res.rows.length > 0) {
         console.log('Usuario encontrado:', res.rows.item(0)); // Usuario encontrado, imprime los datos
         return res.rows.item(0); // Retorna el usuario encontrado
@@ -628,7 +623,7 @@ export class ServiciobdService {
       return;
     }
   }
-  
+
 
 
   // Crear tabla si no existe
@@ -723,16 +718,16 @@ export class ServiciobdService {
           INSERT INTO persona (nombres, apellidos, correo, clave, telefono, foto, idRol, rut) 
           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
       }
-  
+
       // Ejecuta la consulta SQL con this.database.executeSql
       await this.database.executeSql(sql, valores);
-  
+
     } catch (error) {
-      alert('Error al insertar usuario predeterminado:'+ error);
+      alert('Error al insertar usuario predeterminado:' + error);
       throw error;
     }
   }
-  
+
   // Verificar si un usuario existe por RUT
   private async verificarUsuario(rut: string): Promise<boolean> {
     const query = 'SELECT COUNT(1) as count FROM persona WHERE rut = ?';
@@ -770,7 +765,7 @@ export class ServiciobdService {
       throw new Error('No se pudo actualizar la contraseña');
     }
   }
-  
+
   async obtenerUsuarioPorCorreoYRut(correo: string, rut: string): Promise<any> {
     const query = 'SELECT * FROM persona WHERE correo = ? AND rut = ?';
     try {
@@ -784,13 +779,13 @@ export class ServiciobdService {
       throw error;
     }
   }
-  
-  
-  
 
-  
 
-////////////////////////
+
+
+
+
+  ////////////////////////
 
   async obtenerTodosLosSignosVitales(): Promise<SignosVitales[]> {
     const query = 'SELECT * FROM signos_vitales';
@@ -845,7 +840,7 @@ export class ServiciobdService {
       INSERT INTO confirmacion (idEmerg, idPersona, fecha_confirmacion, estado_confirmacion) 
       VALUES (?, ?, ?, ?)
     `;
-    
+
     try {
       await this.database.executeSql(query, [
         confirmacion.idEmerg,
@@ -859,7 +854,7 @@ export class ServiciobdService {
       throw error;
     }
   }
-  
+
   async obtenerUltimaConfirmacion(): Promise<any> {
     const query = 'SELECT * FROM confirmacion ORDER BY idConfirmacion DESC LIMIT 1';
     const resultado = await this.database.executeSql(query, []);
@@ -869,8 +864,8 @@ export class ServiciobdService {
     return null;
   }
 
- async obtenerUltimasEmergenciasActivas(): Promise<any[]> {
-  const query = `
+  async obtenerUltimasEmergenciasActivas(): Promise<any[]> {
+    const query = `
     SELECT e.*, p.nombre AS nombrePaciente
     FROM emergencia e
     INNER JOIN paciente p ON e.idPaciente = p.idPaciente
@@ -878,86 +873,204 @@ export class ServiciobdService {
     ORDER BY e.fecha_emer DESC 
     LIMIT 2
   `;
-  try {
-    const resultado = await this.database.executeSql(query, []);
-    const emergencias = [];
-    for (let i = 0; i < resultado.rows.length; i++) {
-      emergencias.push(resultado.rows.item(i));
+    try {
+      const resultado = await this.database.executeSql(query, []);
+      const emergencias = [];
+      for (let i = 0; i < resultado.rows.length; i++) {
+        emergencias.push(resultado.rows.item(i));
+      }
+      console.log('Emergencias activas obtenidas:', emergencias);
+      return emergencias;
+    } catch (error) {
+      console.error('Error al obtener emergencias activas:', error);
+      throw error;
     }
-    console.log('Emergencias activas obtenidas:', emergencias); // Depuración
-    return emergencias;
-  } catch (error) {
-    console.error('Error al obtener emergencias activas:', error);
-    throw error;
   }
-}
 
-
-// En ServiciobdService
-async actualizarEstadoEmergencia(idEmerg: number, nuevoEstado: string): Promise<void> {
-  const query = 'UPDATE emergencia SET estado = ? WHERE idEmerg = ?';
-  try {
-    await this.database.executeSql(query, [nuevoEstado, idEmerg]);
-    console.log(`Estado de emergencia con ID ${idEmerg} actualizado a ${nuevoEstado}`);
-  } catch (error) {
-    console.error('Error al actualizar el estado de la emergencia:', error);
-    throw error;
+  async actualizarEstadoEmergencia(idEmerg: number, nuevoEstado: string): Promise<void> {
+    const query = 'UPDATE emergencia SET estado = ? WHERE idEmerg = ?';
+    try {
+      await this.database.executeSql(query, [nuevoEstado, idEmerg]);
+      console.log(`Estado de emergencia con ID ${idEmerg} actualizado a ${nuevoEstado}`);
+    } catch (error) {
+      console.error('Error al actualizar el estado de la emergencia:', error);
+      throw error;
+    }
   }
-}
 
-async agregarEmergencia(motivo: string, descripcionMotivo: string, notas: string, idPaciente: number): Promise<void> {
-  const fechaEmergencia = new Date().toISOString(); // Fecha actual en formato ISO
-  const estado = 'activo'; // Definir estado inicial de la emergencia
+  async agregarEmergencia(motivo: string, descripcionMotivo: string, notas: string, idPaciente: number): Promise<void> {
+    const fechaEmergencia = new Date().toISOString();
+    const estado = 'activo';
 
-  const query = `
+    const query = `
     INSERT INTO emergencia (fecha_emer, motivo, desc_motivo, observaciones, estado, idPaciente)
     VALUES (?, ?, ?, ?, ?, ?)
   `;
 
-  try {
-    await this.database.executeSql(query, [fechaEmergencia, motivo, descripcionMotivo, notas, estado, idPaciente]);
-    console.log('Emergencia guardada correctamente');
-  } catch (error) {
-    console.error('Error al guardar la emergencia en la base de datos:', error);
-    throw error; // Lanza el error para que el componente pueda manejarlo
-  }
-}
-
-
-
-
-async obtenerUltimaEmergencia(): Promise<any> {
-  const query = 'SELECT * FROM emergencia ORDER BY idEmerg DESC LIMIT 1';
-  try {
-    const resultado = await this.database.executeSql(query, []);
-    if (resultado.rows.length > 0) {
-      return resultado.rows.item(0); // Retorna la última emergencia
+    try {
+      await this.database.executeSql(query, [fechaEmergencia, motivo, descripcionMotivo, notas, estado, idPaciente]);
+      console.log('Emergencia guardada correctamente');
+    } catch (error) {
+      console.error('Error al guardar la emergencia en la base de datos:', error);
+      throw error;
     }
-    return null; // Si no hay resultados
+  }
+
+
+
+
+  async obtenerUltimaEmergencia(): Promise<any> {
+    const query = 'SELECT * FROM emergencia ORDER BY idEmerg DESC LIMIT 1';
+    try {
+      const resultado = await this.database.executeSql(query, []);
+      if (resultado.rows.length > 0) {
+        return resultado.rows.item(0);
+      }
+      return null;
+    } catch (error) {
+      console.error('Error al obtener la última emergencia:', error);
+      throw error;
+    }
+  }
+
+  async obtenerRutPorIdPaciente(idPaciente: number): Promise<string | null> {
+    const query = `SELECT rut FROM paciente WHERE idPaciente = ?`;
+    try {
+      const resultado = await this.database.executeSql(query, [idPaciente]);
+      if (resultado.rows.length > 0) {
+        return resultado.rows.item(0).rut;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error al obtener el RUT:', error);
+      throw error;
+    }
+  }
+
+  async agregarAmbulancia(patente: string, equipada: boolean, fec_mant: string, idestado: number): Promise<{ insertId: number }> {
+    const query = `
+    INSERT INTO ambulancia (patente, equipada, fec_mant, idestado)
+    VALUES (?, ?, ?, ?)
+  `;
+    try {
+      const res = await this.database.executeSql(query, [patente, equipada ? 1 : 0, fec_mant, idestado]);
+      return { insertId: res.insertId };
+    } catch (error) {
+      console.error('Error al guardar la ambulancia en la base de datos:', error);
+      throw error;
+    }
+  }
+
+
+
+
+  async listarEstados(): Promise<any[]> {
+    const query = `SELECT idestado, nombre FROM estado`;
+    try {
+      const resultado = await this.database.executeSql(query, []);
+      const estados = [];
+      for (let i = 0; i < resultado.rows.length; i++) {
+        estados.push(resultado.rows.item(i));
+      }
+      return estados;
+    } catch (error) {
+      console.error('Error al listar estados:', error);
+      throw error;
+    }
+  }
+
+  async insertarEstadosIniciales() {
+    const estados = [
+      { id: 1, nombre: 'Disponible' },
+      { id: 2, nombre: 'Mantenimiento' },
+      { id: 3, nombre: 'En Servicio' },
+    ];
+
+    for (const estado of estados) {
+      const query = `INSERT OR IGNORE INTO estado (idestado, nombre) VALUES (?, ?)`;
+      await this.database.executeSql(query, [estado.id, estado.nombre]);
+    }
+  }
+
+  listarAmbulancias(): Promise<any[]> {
+    const query = `SELECT * FROM ambulancia`;
+    return this.database.executeSql(query, []).then((res) => {
+      const ambulancias: any[] = [];
+      for (let i = 0; i < res.rows.length; i++) {
+        ambulancias.push(res.rows.item(i));
+      }
+      return ambulancias;
+    }).catch(error => {
+      console.error('Error al listar ambulancias:', error);
+      throw error;
+    });
+  }
+
+  async obtenerAmbulanciaPorId(id: number): Promise<any> {
+    const query = `
+    SELECT ambulancia.*, estado.nombre AS estadoNombre
+    FROM ambulancia
+    INNER JOIN estado ON ambulancia.idestado = estado.idestado
+    WHERE ambulancia.idambulancia = ?
+  `;
+    try {
+      const res = await this.database.executeSql(query, [id]);
+      if (res.rows.length > 0) {
+        return res.rows.item(0);
+      }
+      return null;
+    } catch (error) {
+      console.error('Error al obtener la ambulancia:', error);
+      throw error;
+    }
+  }
+
+
+  async actualizarAmbulancia(id: number, patente: string, equipada: boolean, fec_mant: string, idestado: number): Promise<void> {
+    const query = `
+    UPDATE ambulancia 
+    SET patente = ?, equipada = ?, fec_mant = ?, idestado = ? 
+    WHERE idambulancia = ?
+  `;
+    try {
+      await this.database.executeSql(query, [patente, equipada ? 1 : 0, fec_mant, idestado, id]);
+      console.log('Ambulancia actualizada correctamente');
+    } catch (error) {
+      console.error('Error al actualizar la ambulancia:', error);
+      throw error;
+    }
+  }
+
+  async verificarAmbulanciaPorPatente(patente: string): Promise<boolean> {
+    const query = `SELECT COUNT(*) AS count FROM ambulancia WHERE patente = ?`;
+    try {
+      const result = await this.database.executeSql(query, [patente]);
+      const count = result.rows.item(0).count;
+      return count > 0;
+    } catch (error) {
+      console.error('Error al verificar la existencia de la patente:', error);
+      throw error;
+    }
+  }
+
+
+async obtenerAmbulanciaPorPatente(patente: string): Promise<any> {
+  const query = `SELECT * FROM ambulancia WHERE patente = ?`;
+  try {
+    const res = await this.database.executeSql(query, [patente]);
+    if (res.rows.length > 0) {
+      return res.rows.item(0);
+    } else {
+      return null;
+    }
   } catch (error) {
-    console.error('Error al obtener la última emergencia:', error);
+    console.error('Error al obtener la ambulancia por patente:', error);
     throw error;
   }
 }
 
-async obtenerRutPorIdPaciente(idPaciente: number): Promise<string | null> {
-  const query = `SELECT rut FROM paciente WHERE idPaciente = ?`;
-  try {
-    const resultado = await this.database.executeSql(query, [idPaciente]);
-    if (resultado.rows.length > 0) {
-      return resultado.rows.item(0).rut;
-    }
-    return null;
-  } catch (error) {
-    console.error('Error al obtener el RUT:', error);
-    throw error;
-  }
 }
 
-
-
-}
-  
 
 
 

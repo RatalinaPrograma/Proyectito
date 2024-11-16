@@ -124,22 +124,10 @@ const routes: Routes = [
     path: 'modificar-hospital/:id',
     loadChildren: () => import('./pages/modificar-hospital/modificar-hospital.module').then( m => m.ModificarHospitalPageModule)
   },
-  {
-    path: 'modificar-unidad',
-    loadChildren: () => import('./pages/modificar-unidad/modificar-unidad.module').then( m => m.ModificarUnidadPageModule)
-  },
 
   {
     path: 'eliminar-unidad',
     loadChildren: () => import('./pages/eliminar-unidad/eliminar-unidad.module').then( m => m.EliminarUnidadPageModule)
-  },
-  {
-    path: 'agregar-unidad',
-    loadChildren: () => import('./pages/agregar-unidad/agregar-unidad.module').then( m => m.AgregarUnidadPageModule)
-  },
-  {
-    path: 'crud-unidad',
-    loadChildren: () => import('./pages/crud-unidad/crud-unidad.module').then( m => m.CrudUnidadPageModule)
   },
   {
     path: 'agregar-personas',
@@ -170,9 +158,25 @@ const routes: Routes = [
     loadChildren: () => import('./pages/restablecer-contrasena/restablecer-contrasena.module').then( m => m.RestablecerContrasenaPageModule)
   },
   {
+    path: 'mostrar-unidad/:id',
+    loadChildren: () => import('./pages/mostrar-unidad/mostrar-unidad.module').then( m => m.MostrarUnidadPageModule)
+  },
+  {
+    path: 'editar-unidad/:id',
+    loadChildren: () => import('./pages/editar-unidad/editar-unidad.module').then( m => m.EditarUnidadPageModule)
+  },
+  {
+    path: 'buscar-ambulancia',
+    loadChildren: () => import('./pages/buscar-ambulancia/buscar-ambulancia.module').then( m => m.BuscarAmbulanciaPageModule)
+  },
+
+  {
     path: '**',
     loadChildren: () => import('./pages/not-found/not-found.module').then( m => m.NotFoundPageModule)
   },
+
+
+
 
 
 

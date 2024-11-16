@@ -4,17 +4,17 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { CrudUnidadPageRoutingModule } from './crud-unidad-routing.module';
+import { EditarUnidadPageRoutingModule } from './editar-unidad-routing.module';
 
-import { CrudUnidadPage } from './crud-unidad.page';
+import { EditarUnidadPage } from './editar-unidad.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    CrudUnidadPageRoutingModule
+    EditarUnidadPageRoutingModule
   ],
-  declarations: [CrudUnidadPage]
+  declarations: [EditarUnidadPage]
 })
-export class CrudUnidadPageModule {}
+export class EditarUnidadPageModule {}

@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { CrudUnidadPage } from './crud-unidad.page';
+import { MostrarUnidadPage } from './mostrar-unidad.page';
 
-describe('CrudUnidadPage', () => {
-  let component: CrudUnidadPage;
-  let fixture: ComponentFixture<CrudUnidadPage>;
+describe('MostrarUnidadPage', () => {
+  let component: MostrarUnidadPage;
+  let fixture: ComponentFixture<MostrarUnidadPage>;
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CrudUnidadPage);
+    fixture = TestBed.createComponent(MostrarUnidadPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
