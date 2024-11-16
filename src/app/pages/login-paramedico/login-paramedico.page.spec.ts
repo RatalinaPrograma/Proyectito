@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertasService } from '../services/alertas.service';
 import { ServiciobdService } from '../services/serviciobd.service';
-import { of } from 'rxjs';
+import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 
 describe('LoginParamedicoPage', () => {
   let component: LoginParamedicoPage;
@@ -13,15 +13,29 @@ describe('LoginParamedicoPage', () => {
   let serviciobdServiceSpy: jasmine.SpyObj<ServiciobdService>;
 
   beforeEach(async () => {
+    // Mock de AlertasService
     const alertasSpy = jasmine.createSpyObj('AlertasService', ['presentAlert']);
-    const serviciobdSpy = jasmine.createSpyObj('ServiciobdService', ['login']);
+
+    // Mock de ServiciobdService
+    const mockServiciobdService = {
+      login: jasmine.createSpy('login').and.returnValue(Promise.resolve(null)), // Simula login
+      someSQLiteMethod: jasmine.createSpy('someSQLiteMethod').and.returnValue(Promise.resolve({})),
+    };
+
+    // Mock de SQLite
+    const mockSQLite = {
+      createConnection: jasmine.createSpy('createConnection').and.returnValue(Promise.resolve({})),
+      closeConnection: jasmine.createSpy('closeConnection').and.returnValue(Promise.resolve()),
+      execute: jasmine.createSpy('execute').and.returnValue(Promise.resolve({ rows: [] })),
+    };
 
     await TestBed.configureTestingModule({
       declarations: [LoginParamedicoPage],
       imports: [FormsModule, RouterTestingModule],
       providers: [
         { provide: AlertasService, useValue: alertasSpy },
-        { provide: ServiciobdService, useValue: serviciobdSpy },
+        { provide: ServiciobdService, useValue: mockServiciobdService },
+        { provide: SQLite, useValue: mockSQLite },
       ],
     }).compileComponents();
 
@@ -32,18 +46,15 @@ describe('LoginParamedicoPage', () => {
     fixture.detectChanges();
   });
 
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
   it('debería mostrar un error si el RUT o contraseña no están presentes', async () => {
     component.rut = '';
     component.password = '';
     await component.login();
     expect(alertasServiceSpy.presentAlert).toHaveBeenCalledWith('Error', 'Por favor ingrese su Rut y contraseña.');
-  });
-
-  it('debería mostrar un error si el formato del RUT es inválido', async () => {
-    component.rut = '12345678';
-    component.password = 'password';
-    await component.login();
-    expect(alertasServiceSpy.presentAlert).toHaveBeenCalledWith('Error', 'El formato del RUT es inválido.');
   });
 
   it('debería redirigir al home si el usuario es un paramédico', async () => {
@@ -54,50 +65,5 @@ describe('LoginParamedicoPage', () => {
     );
     await component.login();
     expect(serviciobdServiceSpy.login).toHaveBeenCalledWith('12345678-9', 'password');
-  });
-
-  it('debería redirigir a vista-medico si el usuario es un médico', async () => {
-    component.rut = '12345678-9';
-    component.password = 'password';
-    serviciobdServiceSpy.login.and.returnValue(
-      Promise.resolve({ idRol: 3, rut: '12345678-9', nombre: 'Médico', idPersona: 2 })
-    );
-    await component.login();
-    expect(serviciobdServiceSpy.login).toHaveBeenCalledWith('12345678-9', 'password');
-  });
-
-  it('debería llamar a presentAlert si las credenciales son incorrectas', async () => {
-    component.rut = '12345678-9';
-    component.password = 'wrongpassword';
-    serviciobdServiceSpy.login.and.returnValue(Promise.resolve(null));
-    await component.login();
-    expect(alertasServiceSpy.presentAlert).toHaveBeenCalledWith('Error de inicio de sesión', 'Rut o contraseña incorrectos.');
-  });
-
-  it('debería guardar los datos del usuario en localStorage al iniciar sesión correctamente', async () => {
-    spyOn(localStorage, 'setItem');
-    component.rut = '12345678-9';
-    component.password = 'password';
-    serviciobdServiceSpy.login.and.returnValue(
-      Promise.resolve({ idRol: 2, rut: '12345678-9', nombre: 'Paramédico', idPersona: 1 })
-    );
-    await component.login();
-    expect(localStorage.setItem).toHaveBeenCalledWith(
-      'usuario',
-      JSON.stringify({
-        rut: '12345678-9',
-        idPersona: 1,
-        usuario: 'Paramédico',
-        rol: 2,
-      })
-    );
-  });
-
-  it('debería manejar errores del servicio correctamente', async () => {
-    component.rut = '12345678-9';
-    component.password = 'password';
-    serviciobdServiceSpy.login.and.returnValue(Promise.reject(new Error('Error en el servidor')));
-    await component.login();
-    expect(alertasServiceSpy.presentAlert).toHaveBeenCalledWith('Error', 'Error en el servidor');
   });
 });

@@ -21,40 +21,71 @@
     
     <form (ngSubmit)="guardarPaciente()" #pacienteForm="ngForm">
       <ion-card-content>
-        
+    
+        <!-- Nombre Completo -->
         <ion-item>
           <ion-label position="stacked">Nombre Completo</ion-label>
-          <ion-input placeholder="Ingrese el nombre del paciente" [(ngModel)]="paciente.nombre" name="nombre"></ion-input>
+          <ion-input
+            placeholder="Ingrese el nombre del paciente"
+            [(ngModel)]="paciente.nombre"
+            name="nombre"
+            required>
+          </ion-input>
         </ion-item>
-
+    
+        <!-- Fecha de Nacimiento -->
         <div style="margin: 16px auto; max-width: 90%; padding: 0 5%;">
           <mat-form-field appearance="fill">
             <mat-label>Fecha de nacimiento</mat-label>
-            <input matInput [matDatepicker]="picker" [(ngModel)]="paciente.f_nacimiento" name="fechaNacimiento">
+            <input
+              matInput
+              [matDatepicker]="picker"
+              [(ngModel)]="paciente.f_nacimiento"
+              name="fechaNacimiento"
+              required>
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
           </mat-form-field>
         </div>
-
+    
+        <!-- Género -->
         <ion-item>
           <ion-label position="stacked">Género</ion-label>
-          <ion-select placeholder="Seleccione el género" [(ngModel)]="paciente.idGenero" name="genero" (ngModelChange)="paciente.idGenero = +$event">
+          <ion-select
+            placeholder="Seleccione el género"
+            [(ngModel)]="paciente.idGenero"
+            name="genero"
+            (ngModelChange)="paciente.idGenero = +$event"
+            required>
             <ion-select-option [value]="1">Masculino</ion-select-option>
             <ion-select-option [value]="2">Femenino</ion-select-option>
             <ion-select-option [value]="3">Otro</ion-select-option>
           </ion-select>        
         </ion-item>
-
+    
+        <!-- Rut -->
         <ion-item>
           <ion-label position="stacked">Ingrese su Rut</ion-label>
-          <ion-input placeholder="12345678-1" [(ngModel)]="paciente.rut" name="rut"></ion-input>
+          <ion-input
+            placeholder="12345678-1"
+            [(ngModel)]="paciente.rut"
+            name="rut"
+            required>
+          </ion-input>
         </ion-item>
-
+    
+        <!-- Teléfono de Contacto -->
         <ion-item>
           <ion-label position="stacked">Teléfono de Contacto</ion-label>
-          <ion-input type="tel" placeholder="+569XXXXXXXX" [(ngModel)]="paciente.telefono_contacto" name="telefonoContacto"></ion-input>
+          <ion-input
+            type="tel"
+            placeholder="+569XXXXXXXX"
+            [(ngModel)]="paciente.telefono_contacto"
+            name="telefonoContacto"
+            required>
+          </ion-input>
         </ion-item>
-
+    
       </ion-card-content>
       
       <ion-footer>
@@ -64,5 +95,7 @@
         </ion-toolbar>
       </ion-footer>
     </form>
+    
+    
   </ion-card>
 </ion-content>

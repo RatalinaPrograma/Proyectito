@@ -1,28 +1,28 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HomePage } from './home.page';
+import { TestBed } from '@angular/core/testing';
+import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 import { ServiciobdService } from '../pages/services/serviciobd.service';
-import { IonicModule } from '@ionic/angular';
-import { HttpClientModule } from '@angular/common/http'; // Para manejar peticiones HTTP
+import { HomePage } from './home.page';
 
 describe('HomePage', () => {
   let component: HomePage;
-  let fixture: ComponentFixture<HomePage>;
+
+  const SQLiteMock = {
+    createConnection: jasmine.createSpy('createConnection').and.returnValue(Promise.resolve({})),
+    closeConnection: jasmine.createSpy('closeConnection').and.returnValue(Promise.resolve()),
+    executeSql: jasmine.createSpy('executeSql').and.returnValue(Promise.resolve({ rows: [] })),
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [HomePage],
-      imports: [
-        IonicModule.forRoot(),
-        HttpClientModule, // Si usas HTTP en tus servicios
-      ],
       providers: [
-        ServiciobdService, // Proveer el servicio real
+        { provide: SQLite, useValue: SQLiteMock }, // Mock de SQLite
+        { provide: ServiciobdService, useClass: ServiciobdService }, // Servicio a probar
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(HomePage);
+    const fixture = TestBed.createComponent(HomePage);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {

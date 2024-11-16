@@ -7,9 +7,11 @@ describe('ServiciobdService', () => {
 
   // Mock de SQLite
   const SQLiteMock = {
-    executeSql: jasmine.createSpy('executeSql').and.returnValue(Promise.resolve()),
-    openDatabase: jasmine.createSpy('openDatabase').and.returnValue(Promise.resolve()),
+    createConnection: jasmine.createSpy('createConnection').and.returnValue(Promise.resolve({})),
+    closeConnection: jasmine.createSpy('closeConnection').and.returnValue(Promise.resolve()),
+    executeSql: jasmine.createSpy('executeSql').and.returnValue(Promise.resolve({ rows: [] })),
   };
+  
 
   // Mock de ServiciobdService
   const ServiciobdMock = {
@@ -36,5 +38,16 @@ describe('ServiciobdService', () => {
   it('should call login', async () => {
     await service.login('testRut', 'testPassword');
     expect(ServiciobdMock.login).toHaveBeenCalledWith('testRut', 'testPassword');
+  });
+
+  it('should insert a default user', async () => {
+    await service.insertarUsuarioPredeterminado();
+    expect(ServiciobdMock.insertarUsuarioPredeterminado).toHaveBeenCalled();
+  });
+
+  it('should get ambulance by ID', async () => {
+    const result = await service.obtenerAmbulanciaPorId(1);
+    expect(ServiciobdMock.obtenerAmbulanciaPorId).toHaveBeenCalledWith(1);
+    expect(result).toEqual({ patente: 'ABCD12' });
   });
 });
