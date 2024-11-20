@@ -1,88 +1,42 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
+      <ion-menu-button menu="emergenciasMenu"></ion-menu-button>
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
-    <ion-buttons slot="start">
-      <ion-menu-button menu="emergenciasMenu"></ion-menu-button>
-    </ion-buttons>
-    <ion-title>Confirmación de recepción</ion-title>
+    <ion-title>Respuesta Recepción</ion-title>
     <ion-buttons slot="end">
       <ion-img src="/assets/img/2.png" class="logo-img"></ion-img>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-
-<ion-content [fullscreen]="true" class="background" style="--background: url('/assets/imgs/emergencias-fondo.png') no-repeat center center / cover;">
-  
-  <!-- Sección de Confirmación -->
+<ion-content>
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Datos Enviados con Éxito</ion-card-title>
+      <ion-card-title>Confirmación de Recepción</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <ion-icon name="checkmark-circle-outline" class="centered-icon"></ion-icon>
-      <p style="text-align: center; font-size: 1.2em;">
-        Los datos del paciente han sido enviados correctamente al Hospital.
-      </p>
+      <p><strong>Médico:</strong> {{ nombreMedico }} {{ apellidoMedico }}</p>
+      <p><strong>Motivo de la Emergencia:</strong> {{ motivoEmergencia }}</p>
+      <p><strong>Observaciones:</strong> {{ observacionesEmergencia }}</p>
+      <p><strong>Mensaje del Hospital:</strong> {{ mensajeHospital }}</p>
     </ion-card-content>
   </ion-card>
 
-  <!-- Sección de Respuesta del Hospital -->
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Respuesta del Hospital</ion-card-title>
+      <ion-card-title>Acciones</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <ion-item>
-        <ion-label>
-          <h2>Estado de la Respuesta:</h2>
-          <p>{{ estadoRespuesta }}</p>
-        </ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-label>
-          <h2>Mensaje del Hospital:</h2>
-          <p>{{ mensajeHospital }}</p>
-        </ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-label>
-          <h2>Médico Responsable:</h2>
-          <p>{{ nombreMedico }} {{ apellidoMedico }}</p>
-        </ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-label>
-          <h2>Fecha de Confirmación:</h2>
-          <p>{{ fechaConfirmacion | date: 'short' }}</p>
-        </ion-label>
-      </ion-item>
+      <ion-button expand="block" (click)="confirmarRecepcion()">
+        Confirmar Recepción Correcta
+        <ion-spinner *ngIf="cargando && accion === 'correcta'" slot="end"></ion-spinner>
+      </ion-button>
+
+      <ion-button expand="block" color="danger" (click)="confirmarRecepcionIncorrecta()">
+        Confirmar Recepción Incorrecta
+        <ion-spinner *ngIf="cargando && accion === 'incorrecta'" slot="end"></ion-spinner>
+      </ion-button>
     </ion-card-content>
   </ion-card>
 </ion-content>
-
-<ion-footer class="custom-footer">
-  <ion-grid>
-    <ion-row>
-      <ion-col>
-        <ion-button expand="block" fill="clear" routerLink="/home" routerDirection="root">
-          <ion-icon name="home-outline"></ion-icon>
-          <ion-label>Inicio</ion-label>
-        </ion-button>
-      </ion-col>
-      <ion-col>
-        <ion-button expand="block" fill="clear" routerLink="/mapa-vivo" routerDirection="root">
-          <ion-icon name="map-outline"></ion-icon>
-          <ion-label>Ver Mapa en Vivo</ion-label>
-        </ion-button>
-      </ion-col>
-      <ion-col>
-        <ion-button expand="block" fill="clear" routerLink="/login-paramedico" routerDirection="root">
-          <ion-icon name="log-out-outline"></ion-icon>
-          <ion-label>Cerrar Sesión</ion-label>
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-footer>

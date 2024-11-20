@@ -32,11 +32,17 @@ export class EnvioInfoPage implements OnInit {
   ) {
 
   }
+
+  ngOnInit() {
+    this.rut = this.route.snapshot.paramMap.get('rut') || '';
+    alert('Rut: '+this.rut);
+    this.obteneralPaciente();
+  }
   
   obteneralPaciente() {    
     this.baseDatos.obtenerPaciente(this.rut)
       .then((res) => {
-
+        alert('Paciente encontrado '+JSON.stringify(res));
         res.edad = new Date().getFullYear() - new Date(res.f_nacimiento).getFullYear();
         this.paciente = res;
       })
@@ -44,11 +50,6 @@ export class EnvioInfoPage implements OnInit {
         console.error(`ERROR ${error}`)
         alert('ERROR al tratar de obtener al paciente.')
       });
-  }
-
-  ngOnInit() {
-    this.rut = this.route.snapshot.paramMap.get('rut') || '';
-    this.obteneralPaciente();
   }
 
   enviarEmergencia() {
@@ -61,7 +62,8 @@ export class EnvioInfoPage implements OnInit {
   }
 
   avanzar() {
-    this.router.navigate(['conf-recepcion']);
+    alert('Emergencia enviada');
+    this.router.navigate(['/home']);
   }
  
 

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { ServiciobdService } from '../pages/services/serviciobd.service';
+import { Browser } from '@capacitor/browser';
+
 
 @Component({
   selector: 'app-home',
@@ -10,18 +12,24 @@ import { ServiciobdService } from '../pages/services/serviciobd.service';
 })
 export class HomePage implements OnInit {
 
+
+
+
   horaActual: string | undefined;
   idRolUsuario: number | undefined;
+  rutUsuario: string | undefined;
   constructor(private navCtrl: NavController, private router: Router, private serviciobd: ServiciobdService
   ) {}
 
+
+  
   emergenciasActivas: any[] = [];
   async ngOnInit() {
     this.actualizarHora();
     setInterval(() => {
       this.actualizarHora();
     }, 1000); // Actualiza la hora cada segundo
-    this.obtenerRolUsuario();
+    this.obtenerDatosUsuario();
     try {
       this.emergenciasActivas = await this.serviciobd.obtenerUltimasEmergenciasActivas();
       console.log('Emergencias activas en el Home:', this.emergenciasActivas); // Depuración
@@ -30,13 +38,15 @@ export class HomePage implements OnInit {
     }
   }
 
-  obtenerRolUsuario() {
+  obtenerDatosUsuario() {
     const usuario1 = localStorage.getItem('usuario');
     if (usuario1) {
       const usuario = JSON.parse(usuario1);
-      this.idRolUsuario = usuario.rol;
+      this.idRolUsuario = usuario.rol; // Rol del usuario
+      this.rutUsuario = usuario.rut;   // RUT del usuario
     }
   }
+  
 
   actualizarHora() {
     const ahora = new Date();
@@ -105,6 +115,14 @@ export class HomePage implements OnInit {
     } catch (error) {
       console.error('Error al cambiar el estado de la emergencia:', error);
     }
+  }
+
+  async abrirNavegador() {
+    await Browser.open({ url: 'https://www.davila.cl' });
+  }
+
+  async abrirNavegador2() {
+    await Browser.open({ url: 'https://complejohospitalariosanjose.cl' });
   }
 
 }

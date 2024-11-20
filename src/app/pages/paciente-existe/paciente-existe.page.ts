@@ -63,7 +63,7 @@ export class PacienteExistePage {
   }
 
   async irEnvio() {
-    this.navCtrl.navigateForward(['/reg-causaemergencia',this.paciente?.idPaciente], {
+    this.navCtrl.navigateForward(['/reg-causaemergencia',this.paciente?.rut], {
       state: {
         idPaciente: this.paciente?.idPaciente 
       }

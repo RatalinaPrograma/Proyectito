@@ -10,7 +10,7 @@ import { NgForm } from '@angular/forms';
   templateUrl: './modificar-pacientes.page.html',
   styleUrls: ['./modificar-pacientes.page.scss'],
 })
-export class ModificarPacientesPage implements OnInit {
+export class ModificarPacientesPage implements OnInit { // Asegúrate de que la clase esté exportada correctamente.
   public rut: string = '';
   public hoy: string = ''; // Fecha de hoy en formato 'YYYY-MM-DD'
   public paciente: any = {
@@ -19,15 +19,15 @@ export class ModificarPacientesPage implements OnInit {
     f_nacimiento: '',
     idGenero: 0,
     rut: '',
-    telefono_contacto: ''
+    telefono_contacto: '',
   };
 
   constructor(
-    private route: ActivatedRoute, 
+    private route: ActivatedRoute,
     private bdService: ServiciobdService,
     private alertController: AlertController,
     private location: Location
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.hoy = new Date().toISOString().split('T')[0]; // Obtener la fecha actual
@@ -40,12 +40,17 @@ export class ModificarPacientesPage implements OnInit {
       const paciente = await this.bdService.obtenerPaciente(rut);
       if (paciente) {
         this.paciente = paciente;
-        this.paciente.f_nacimiento = new Date(this.paciente.f_nacimiento).toISOString().split('T')[0];
+        this.paciente.f_nacimiento = new Date(this.paciente.f_nacimiento)
+          .toISOString()
+          .split('T')[0];
       } else {
         this.presentAlert('Error', 'Paciente no encontrado.');
       }
     } catch (error) {
-      this.presentAlert('Error', `Error al cargar el paciente: ${(error as any).message}`);
+      this.presentAlert(
+        'Error',
+        `Error al cargar el paciente: ${(error as any).message}`
+      );
     }
   }
 
@@ -57,12 +62,16 @@ export class ModificarPacientesPage implements OnInit {
 
     // Validación de la fecha de nacimiento
     if (this.paciente.f_nacimiento > this.hoy) {
-      this.presentAlert('Error', 'La fecha de nacimiento no puede ser mayor a la fecha actual.');
+      this.presentAlert(
+        'Error',
+        'La fecha de nacimiento no puede ser mayor a la fecha actual.'
+      );
       return;
     }
 
     try {
-      const { idPaciente, nombre, f_nacimiento, idGenero, rut, telefono_contacto } = this.paciente;
+      const { idPaciente, nombre, f_nacimiento, idGenero, rut, telefono_contacto } =
+        this.paciente;
       const res = await this.bdService.modificarPaciente(
         idPaciente,
         nombre,
@@ -76,7 +85,10 @@ export class ModificarPacientesPage implements OnInit {
         this.location.back(); // Regresar a la página anterior
       }
     } catch (error) {
-      this.presentAlert('Error', `Error al modificar el paciente: ${(error as any).message}`);
+      this.presentAlert(
+        'Error',
+        `Error al modificar el paciente: ${(error as any).message}`
+      );
     }
   }
 
@@ -84,7 +96,7 @@ export class ModificarPacientesPage implements OnInit {
     const alert = await this.alertController.create({
       header,
       message,
-      buttons: ['Aceptar']
+      buttons: ['Aceptar'],
     });
 
     await alert.present();

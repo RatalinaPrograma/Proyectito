@@ -44,7 +44,7 @@ export class RestablecerContrasenaPage {
 
       // Notifica éxito y redirige al inicio de sesión
       await this.alertasService.presentAlert('Éxito', 'Contraseña restablecida exitosamente.');
-      this.router.navigate(['/login']);
+      this.router.navigate(['/login-paramedico']);
     } catch (error) {
       console.error('Error al actualizar la contraseña:', error);
       await this.alertasService.presentAlert('Error', 'No se pudo actualizar la contraseña. Inténtalo más tarde.');

@@ -6,7 +6,18 @@ ion-header {
       text-align: center;
     }
   }
-  
+  ion-toolbar {
+    --background: #0d47a1;
+    --color: white;
+    text-align: center;
+    font-size: 30px;
+    .logo-img {
+      width: 50px; 
+      height: 50px; 
+      margin-right: 5%;
+    }
+  }
+
   ion-content {
     --background: #f9f9f9;
   

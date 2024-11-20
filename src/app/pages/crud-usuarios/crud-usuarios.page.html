@@ -2,31 +2,51 @@
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home"></ion-back-button>
-      <ion-menu-button menu="emergenciasMenu"></ion-menu-button>
     </ion-buttons>
-    <ion-title>Modificar Usuario</ion-title>
+    <ion-title>Gestionar Usuarios</ion-title>
     <ion-buttons slot="end">
       <ion-img src="/assets/img/2.png" class="logo-img"></ion-img>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-content>
-  <ion-button (click)="agregarPersona()">Agregar Persona</ion-button>
 
+<ion-content class="ion-padding">
+  <!-- Botón para agregar persona -->
+  <ion-button expand="block" color="success" (click)="agregarPersona()">
+    Agregar Persona
+  </ion-button>
+
+  <div class="separator"></div>
+
+  <!-- Lista de usuarios -->
   <ion-list>
-    <ion-item *ngFor="let persona of personas">
-      <ion-label>
-        <h2>{{ persona.nombres }} {{ persona.apellidos }}</h2>
-        <p>RUT: {{ persona.rut }}</p>
-        <p>Correo: {{ persona.correo }}</p>
-        <p>Teléfono: {{ persona.telefono }}</p>
-      </ion-label>
-      <ion-button fill="clear" color="primary" (click)="modificarPersona(persona.idPersona)">
-        Modificar
-      </ion-button>
-      <ion-button fill="clear" color="danger" (click)="eliminarPersona(persona.idPersona)">
-        Eliminar
-      </ion-button>
-    </ion-item>
+    <ion-card *ngFor="let persona of personas">
+      <ion-card-header>
+        <ion-card-title>{{ persona.nombres }} {{ persona.apellidos }}</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <p><strong>RUT:</strong> {{ persona.rut }}</p>
+        <p><strong>Correo:</strong> {{ persona.correo }}</p>
+        <p><strong>Teléfono:</strong> {{ persona.telefono }}</p>
+      </ion-card-content>
+
+      <div class="card-footer">
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6">
+              <ion-button expand="block" color="primary" (click)="modificarPersona(persona.idPersona)">
+                Modificar
+              </ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button expand="block" color="danger" (click)="eliminarPersona(persona.idPersona)">
+                Eliminar
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </ion-card>
   </ion-list>
 </ion-content>

@@ -1,23 +1,83 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title>Confirmación de Recepción</ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button menu="emergenciasMenu"></ion-menu-button>
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Confirmar Recepción</ion-title>
+    <ion-buttons slot="end">
+      <ion-img src="/assets/img/2.png" class="logo-img"></ion-img>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <h2>Confirmar Recepción de Información</h2>
-  <p>Por favor, selecciona si la información ha llegado correctamente o no.</p>
+<ion-content>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Confirmación de Recepción</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <!-- Botones de confirmación -->
+      <ion-button expand="block" (click)="confirmarRecepcion()">
+        Confirmar Recepción Correcta
+        <ion-spinner *ngIf="cargando && accion === 'correcta'" slot="end"></ion-spinner>
+      </ion-button>
 
-  <!-- Botones para confirmar recepción -->
-  <ion-button expand="block" color="success" (click)="confirmarRecepcion()">
-    Confirmar Recepción Correcta
-  </ion-button>
+      <ion-button expand="block" color="danger" (click)="confirmarRecepcionIncorrecta()">
+        Confirmar Recepción Incorrecta
+        <ion-spinner *ngIf="cargando && accion === 'incorrecta'" slot="end"></ion-spinner>
+      </ion-button>
 
-  <ion-button expand="block" color="danger" (click)="confirmarRecepcionIncorrecta()">
-    Confirmar Recepción Incorrecta
-  </ion-button>
+      <!-- Información de confirmación -->
+      <ion-item>
+        <ion-label>
+          <h2>Estado:</h2>
+          <p>{{ estadoRespuesta }}</p>
+        </ion-label>
+      </ion-item>
+      
+      <ion-item>
+        <ion-label>
+          <h2>Mensaje del Hospital:</h2>
+        </ion-label>
+        <ion-textarea [(ngModel)]="mensajeHospital" placeholder="Escribe el mensaje del hospital"></ion-textarea>
+      </ion-item>
 
-  <ion-button expand="block" color="primary" (click)="irPalla()">
-    Ir palla
+      <ion-item>
+        <ion-label>
+          <h2>Médico Responsable:</h2>
+          <p>{{ nombreMedico }} {{ apellidoMedico }}</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>
+          <h2>Fecha Confirmación:</h2>
+          <p>{{ fechaConfirmacion | date: 'short' }}</p>
+        </ion-label>
+      </ion-item>
+
+      <!-- Otros campos de entrada para el usuario -->
+      <ion-item>
+        <ion-label position="stacked">Observaciones</ion-label>
+        <ion-textarea
+          [(ngModel)]="observacionesEmergencia"
+          placeholder="Ingrese observaciones adicionales"
+        ></ion-textarea>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Motivo de la Emergencia</ion-label>
+        <ion-input
+          [(ngModel)]="motivoEmergencia"
+          placeholder="Escriba el motivo de la emergencia"
+        ></ion-input>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-button expand="block" color="danger">
+    ir a recepcion
   </ion-button>
+  
 </ion-content>

@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-
+import { IonicModule } from '@ionic/angular';
 const routes: Routes = [
   {
     path: 'home',
@@ -20,7 +20,7 @@ const routes: Routes = [
     loadChildren: () => import('./pages/reg-detallesmedicos/reg-detallesmedicos.module').then( m => m.RegDetallesmedicosPageModule)
   },
   {
-    path: 'reg-causaemergencia/:idPaciente',
+    path: 'reg-causaemergencia/:rut',
     loadChildren: () => import('./pages/reg-causaemergencia/reg-causaemergencia.module').then( m => m.RegCausaemergenciaPageModule)
   },
   {
@@ -32,7 +32,7 @@ const routes: Routes = [
     loadChildren: () => import('./pages/envio-info/envio-info.module').then( m => m.EnvioInfoPageModule)
   },
   {
-    path: 'conf-recepcion',
+    path: 'conf-recepcion/:rut',
     loadChildren: () => import('./pages/conf-recepcion/conf-recepcion.module').then( m => m.ConfRecepcionPageModule)
   },
   {
@@ -74,10 +74,7 @@ const routes: Routes = [
     path: 'crud-usuarios',
     loadChildren: () => import('./pages/crud-usuarios/crud-usuarios.module').then( m => m.CrudUsuariosPageModule)
   },
-  {
-    path: 'eliminar-usuarios',
-    loadChildren: () => import('./pages/eliminar-usuarios/eliminar-usuarios.module').then( m => m.EliminarUsuariosPageModule)
-  },
+
   {
     path: 'crud-pacientes',
     loadChildren: () => import('./pages/crud-pacientes/crud-pacientes.module').then( m => m.CrudPacientesPageModule)
@@ -116,34 +113,8 @@ const routes: Routes = [
     loadChildren: () => import('./pages/agregar-hospital/agregar-hospital.module').then( m => m.AgregarHospitalPageModule)
   },
   {
-    path: 'eliminar-hospital',
-    loadChildren: () => import('./pages/eliminar-hospital/eliminar-hospital.module').then( m => m.EliminarHospitalPageModule)
-  },
-
-  {
     path: 'modificar-hospital/:id',
     loadChildren: () => import('./pages/modificar-hospital/modificar-hospital.module').then( m => m.ModificarHospitalPageModule)
-  },
-  {
-    path: 'modificar-unidad',
-    loadChildren: () => import('./pages/modificar-unidad/modificar-unidad.module').then( m => m.ModificarUnidadPageModule)
-  },
-
-  {
-    path: 'eliminar-unidad',
-    loadChildren: () => import('./pages/eliminar-unidad/eliminar-unidad.module').then( m => m.EliminarUnidadPageModule)
-  },
-  {
-    path: 'agregar-unidad',
-    loadChildren: () => import('./pages/agregar-unidad/agregar-unidad.module').then( m => m.AgregarUnidadPageModule)
-  },
-  {
-    path: 'crud-unidad',
-    loadChildren: () => import('./pages/crud-unidad/crud-unidad.module').then( m => m.CrudUnidadPageModule)
-  },
-  {
-    path: 'agregar-personas',
-    loadChildren: () => import('./pages/agregar-personas/agregar-personas.module').then( m => m.AgregarPersonasPageModule)
   },
   {
     path: 'cambio-clave',
@@ -154,11 +125,7 @@ const routes: Routes = [
     loadChildren: () => import('./pages/paciente-existe/paciente-existe.module').then( m => m.PacienteExistePageModule)
   },
   {
-    path: 'vista-medico',
-    loadChildren: () => import('./pages/vista-medico/vista-medico.module').then( m => m.VistaMedicoPageModule)
-  },
-  {
-    path: 'conf-recep',
+    path: 'conf-recep/:rut',
     loadChildren: () => import('./pages/conf-recep/conf-recep.module').then( m => m.ConfRecepPageModule)
   },
   {
@@ -170,9 +137,28 @@ const routes: Routes = [
     loadChildren: () => import('./pages/restablecer-contrasena/restablecer-contrasena.module').then( m => m.RestablecerContrasenaPageModule)
   },
   {
+    path: 'mostrar-unidad/:id',
+    loadChildren: () => import('./pages/mostrar-unidad/mostrar-unidad.module').then( m => m.MostrarUnidadPageModule)
+  },
+  {
+    path: 'editar-unidad/:id',
+    loadChildren: () => import('./pages/editar-unidad/editar-unidad.module').then( m => m.EditarUnidadPageModule)
+  },
+  {
+    path: 'buscar-ambulancia',
+    loadChildren: () => import('./pages/buscar-ambulancia/buscar-ambulancia.module').then( m => m.BuscarAmbulanciaPageModule)
+  },
+  {
+    path: 'agregar-personas',
+    loadChildren: () => import('./pages/agregar-personas/agregar-personas.module').then( m => m.AgregarPersonasPageModule )
+  },
+  {
     path: '**',
     loadChildren: () => import('./pages/not-found/not-found.module').then( m => m.NotFoundPageModule)
   },
+
+
+
 
 
 
@@ -194,6 +180,7 @@ const routes: Routes = [
 
 @NgModule({
   imports: [
+    IonicModule.forRoot(),
     RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
   ],
   exports: [RouterModule]
