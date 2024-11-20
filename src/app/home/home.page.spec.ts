@@ -1,28 +1,39 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HomePage } from './home.page';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 import { ServiciobdService } from '../pages/services/serviciobd.service';
-import { HomePage } from './home.page';
+import { AlertasService } from '../pages/services/alertas.service';
 
 describe('HomePage', () => {
   let component: HomePage;
+  let fixture: ComponentFixture<HomePage>;
+  let serviciobdServiceSpy: jasmine.SpyObj<ServiciobdService>;
+  let alertasServiceSpy: jasmine.SpyObj<AlertasService>;
 
-  const SQLiteMock = {
+  // Mock para SQLite
+  const mockSQLite = {
     createConnection: jasmine.createSpy('createConnection').and.returnValue(Promise.resolve({})),
     closeConnection: jasmine.createSpy('closeConnection').and.returnValue(Promise.resolve()),
-    executeSql: jasmine.createSpy('executeSql').and.returnValue(Promise.resolve({ rows: [] })),
+    execute: jasmine.createSpy('execute').and.returnValue(Promise.resolve({ rows: [] })),
   };
 
   beforeEach(async () => {
+    // Configuración del TestBed
+    serviciobdServiceSpy = jasmine.createSpyObj('ServiciobdService', ['getData', 'executeQuery']);
+    alertasServiceSpy = jasmine.createSpyObj('AlertasService', ['presentAlert']);
+
     await TestBed.configureTestingModule({
       declarations: [HomePage],
       providers: [
-        { provide: SQLite, useValue: SQLiteMock }, // Mock de SQLite
-        { provide: ServiciobdService, useClass: ServiciobdService }, // Servicio a probar
+        { provide: SQLite, useValue: mockSQLite }, // Uso del mock para SQLite
+        { provide: ServiciobdService, useValue: serviciobdServiceSpy }, // Mock del servicio de BD
+        { provide: AlertasService, useValue: alertasServiceSpy }, // Mock de alertas
       ],
     }).compileComponents();
 
-    const fixture = TestBed.createComponent(HomePage);
+    fixture = TestBed.createComponent(HomePage);
     component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   it('should create', () => {

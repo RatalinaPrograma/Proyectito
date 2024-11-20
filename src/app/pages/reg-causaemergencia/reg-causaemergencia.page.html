@@ -1,9 +1,7 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/ev-nivelurgencia"></ion-back-button>
-    </ion-buttons>
-    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
       <ion-menu-button menu="emergenciasMenu"></ion-menu-button>
     </ion-buttons>
     <ion-title>Causa de emergencia</ion-title>
@@ -25,9 +23,9 @@
         <ion-item>
           <ion-label position="stacked">Seleccionar Motivo</ion-label>
           <ion-select placeholder="Seleccione el motivo" [(ngModel)]="motivo">
-            <ion-select-option value="emergencia">Emergencia</ion-select-option>
-            <ion-select-option value="seguimiento">Seguimiento</ion-select-option>
-            <ion-select-option value="otro">Otro</ion-select-option>
+            <ion-select-option value="Emergencia">Emergencia</ion-select-option>
+            <ion-select-option value="Seguimiento">Seguimiento</ion-select-option>
+            <ion-select-option value="Otro motivo">Otro</ion-select-option>
           </ion-select>
         </ion-item>
         <ion-item>

@@ -17,6 +17,7 @@ import { NgForm } from '@angular/forms';
 export class NuevaEmergenciaPage implements OnInit {
   paciente: Pacientes ={
   // Variables para almacenar los datos del paciente
+  idPaciente: 0,
   nombre:'',
   f_nacimiento: new Date(), 
   idGenero: 0,
@@ -90,7 +91,7 @@ export class NuevaEmergenciaPage implements OnInit {
       );
       
       console.log('Paciente guardado con éxito:', res);
-      this.router.navigate(['/envio-info']);
+      this.router.navigate(['/reg-causaemergencia',this.paciente.rut]);
 
   
     } catch (error) {

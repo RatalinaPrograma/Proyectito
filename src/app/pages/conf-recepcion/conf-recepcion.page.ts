@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ServiciobdService } from '../services/serviciobd.service';
+import { Confirmacion } from '../services/confirmacion';
+import { Router } from '@angular/router';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-conf-recepcion',
@@ -7,43 +10,116 @@ import { ServiciobdService } from '../services/serviciobd.service';
   styleUrls: ['./conf-recepcion.page.scss'],
 })
 export class ConfRecepcionPage implements OnInit {
-  estadoRespuesta: string = 'Pendiente';
-  mensajeHospital: string = 'Esperando respuesta del hospital...';
+  rutMedico: string = '12345678-9'; // RUT de ejemplo
+  idEmergencia: number = 1; // ID de la emergencia
+
+  mensajeHospital: string = 'Cargando...';
   nombreMedico: string = '';
   apellidoMedico: string = '';
   motivoEmergencia: string = '';
   observacionesEmergencia: string = '';
-  fechaConfirmacion: string = '';
+  cargando: boolean = false;
+  accion: string = '';
 
-  constructor(private bdService: ServiciobdService) {}
+  constructor(
+    private bdService: ServiciobdService,
+    private router: Router,
+    private alertCtrl: AlertController
+  ) {}
 
   ngOnInit() {
-    this.cargarEstadoRespuesta();
+    this.cargarDetalles();
   }
 
-  async cargarEstadoRespuesta() {
+  async cargarDetalles() {
     try {
-      const confirmacion = await this.bdService.obtenerUltimaConfirmacionConDetalles();
-      
-      if (confirmacion) {
-        this.estadoRespuesta = confirmacion.estado_confirmacion ? 'Aceptado' : 'Rechazado';
-        this.mensajeHospital = confirmacion.estado_confirmacion 
-          ? 'El paciente puede ser trasladado de inmediato. Estamos preparados para recibirlo.'
-          : 'Lo sentimos, no estamos preparados para recibir al paciente en este momento.';
-        
-        // Datos del médico y de la emergencia
-        this.nombreMedico = confirmacion.nombreMedico;
-        this.apellidoMedico = confirmacion.apellidoMedico;
-        this.motivoEmergencia = confirmacion.motivoEmergencia;
-        this.observacionesEmergencia = confirmacion.observacionesEmergencia;
-        this.fechaConfirmacion = confirmacion.fecha_confirmacion;
-      } else {
-        this.estadoRespuesta = 'No se encontró ninguna confirmación.';
-      }
+      const medico = await this.bdService.obtenerMedicoPorRut(this.rutMedico);
+      this.nombreMedico = medico ? medico.nombres : 'Desconocido';
+      this.apellidoMedico = medico ? medico.apellidos : 'Desconocido';
+
+      const emergencia = await this.bdService.obtenerEmergenciaPorId(this.idEmergencia);
+      this.motivoEmergencia = emergencia ? emergencia.motivo : 'Motivo no encontrado';
+      this.observacionesEmergencia = emergencia ? emergencia.observaciones : 'Sin observaciones';
+
+      this.mensajeHospital = await this.bdService.obtenerMensajeHospitalPorEmergencia(this.idEmergencia);
     } catch (error) {
-      console.error('Error al obtener el estado de la respuesta:', error);
-      this.estadoRespuesta = 'Error';
-      this.mensajeHospital = 'No se pudo obtener la respuesta del hospital.';
+      console.error('Error al cargar los detalles:', error);
+      this.mensajeHospital = 'Error al cargar los datos del hospital';
     }
+  }
+
+  async confirmarRecepcion() {
+    this.cargando = true;
+    this.accion = 'correcta';
+
+    try {
+      const medico = await this.bdService.obtenerMedicoPorRut(this.rutMedico);
+      const confirmacion = new Confirmacion(this.idEmergencia, medico.idPersona, true);
+
+      await this.bdService.guardarConfirmacion(confirmacion);
+      alert('Recepción confirmada como correcta');
+      this.router.navigate(['/vista-medico']);
+    } catch (error) {
+      console.error('Error al confirmar la recepción:', error);
+      this.mostrarError('Error al confirmar la recepción: ' + JSON.stringify(error));
+    } finally {
+      this.cargando = false;
+      this.accion = '';
+    }
+  }
+
+  async confirmarRecepcionIncorrecta() {
+    const alert = await this.alertCtrl.create({
+      header: 'Confirmar',
+      message: '¿Estás seguro de que la información es incorrecta?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+        },
+        {
+          text: 'Confirmar',
+          handler: async () => {
+            this.cargando = true;
+            this.accion = 'incorrecta';
+
+            try {
+              const medico = await this.bdService.obtenerMedicoPorRut(this.rutMedico);
+              const confirmacion = new Confirmacion(this.idEmergencia, medico.idPersona, false);
+
+              await this.bdService.guardarConfirmacion(confirmacion);
+              const alertElement = await this.alertCtrl.create({
+                header: 'Confirmación',
+                message: 'Recepción confirmada como incorrecta',
+                buttons: ['OK']
+              });
+              await alertElement.present();
+              this.router.navigate(['/vista-medico']);
+            } catch (error) {
+              console.error('Error al confirmar la recepción:', error);
+              const alertElement = await this.alertCtrl.create({
+                header: 'Error',
+                message: 'Error al confirmar la recepción: ' + JSON.stringify(error),
+                buttons: ['OK']
+              });
+              await alertElement.present();
+            } finally {
+              this.cargando = false;
+              this.accion = '';
+            }
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }
+
+  private async mostrarError(mensaje: string) {
+    const alert = await this.alertCtrl.create({
+      header: 'Error',
+      message: mensaje,
+      buttons: ['OK'],
+    });
+    await alert.present();
   }
 }

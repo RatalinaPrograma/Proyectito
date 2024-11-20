@@ -1,7 +1,6 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="start">
       <ion-menu-button menu="emergenciasMenu"></ion-menu-button>
@@ -29,8 +28,7 @@
   <ion-button expand="block" color="primary" [routerLink]="['/editar-unidad', unidad.idambulancia]">
     Editar Ambulancia
   </ion-button>
-  <ion-button expand="block" color="primary" [routerLink]="['/home]">
+  <ion-button expand="block" color="primary" [routerLink]="['/home']">
     Ir al Home
   </ion-button>
-
 </ion-content>

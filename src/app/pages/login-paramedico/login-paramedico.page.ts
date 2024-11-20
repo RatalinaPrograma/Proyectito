@@ -17,14 +17,12 @@ export class LoginParamedicoPage {
     private alertController: AlertController,
     private router: Router,
     private servicebd: ServiciobdService,
-    private alertasb: AlertasService, // Servicio de alertas para mostrar mensajes
+    private alertasb: AlertasService
   ) {}
 
   ngOnInit() {}
 
-
-
-
+  // Método para insertar usuario inicial
   async insertarUsuarioInicial() {
     try {
       await this.servicebd.insertarUsuarioPredeterminado();
@@ -55,40 +53,44 @@ export class LoginParamedicoPage {
       this.alertasb.presentAlert('Error', mensajeError);
       return;
     }
-
-    const usuario = await this.servicebd.login(this.rut, this.password);
-    if (usuario) {
-      
-      // Redirige según el rol del usuario
-      switch (usuario.idRol) {
-        case 1: // Administrador
-          this.router.navigate(['/home']);
-          break;
-        case 2: // Paramédico
-          this.router.navigate(['/home']);
-          break;
-        case 3: // Médico
-          this.router.navigate(['/vista-medico']);
-          break;
-        default:
-          this.alertasb.presentAlert('Error', 'Rol no reconocido.');
-          break;
+  
+    try {
+      // Llama al método de login en el servicio
+      const usuario = await this.servicebd.login(this.rut, this.password);
+  
+      // Registra el valor de usuario para depuración
+      console.log('Resultado del login:', usuario);
+  
+      // Validar si el usuario retornado es válido
+      if (usuario && typeof usuario === 'object') {
+        console.log('Usuario encontrado:', usuario);
+  
+        // Guardar información del usuario en localStorage
+        const LSusuario = {
+          rut: usuario.rut,
+          idPersona: usuario.idPersona || null,
+          usuario: usuario.nombres || '',
+          rol: usuario.idRol || 0,
+        };
+        localStorage.setItem('usuario', JSON.stringify(LSusuario));
+  
+        // Redirige al home correspondiente
+        await this.router.navigate(['/home']);
+        console.log('Redirección exitosa a /home');
+      } else {
+        console.error('Usuario inválido o no encontrado:', usuario);
+        this.alertasb.presentAlert(
+          'Error de inicio de sesión',
+          'Rut o contraseña incorrectos.'
+        );
       }
-
-      const LSusuario = {
-        rut: usuario.rut,
-        idPersona: usuario.idPersona,
-        usuario: usuario.nombre,
-        rol: usuario.idRol,
-      }
-      localStorage.setItem('usuario', JSON.stringify(LSusuario));
-
-      // const usuarioData = localStorage.getItem('usuario');
-      // if (usuarioData) {
-      //   JSON.parse(usuarioData);
-      // }
-    } else {
-      this.alertasb.presentAlert('Error de inicio de sesión', 'Rut o contraseña incorrectos.');
+    } catch (error) {
+      console.error('Error durante el login:', error);
+      this.alertasb.presentAlert(
+        'Error',
+        'Ocurrió un error inesperado durante el inicio de sesión.'
+      );
     }
   }
+  
 }

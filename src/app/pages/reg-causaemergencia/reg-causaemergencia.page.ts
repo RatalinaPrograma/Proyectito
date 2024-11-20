@@ -32,6 +32,8 @@ export class RegCausaEmergenciaPage implements OnInit {
   }
 
   ngOnInit() {
+    alert('ID Paciente: ' + this.idPaciente);
+    alert('RUT Paciente: ' + this.rutPaciente);
     if (this.idPaciente && !this.rutPaciente) {
       this.obtenerRut();
     }
@@ -40,6 +42,7 @@ export class RegCausaEmergenciaPage implements OnInit {
   async obtenerRut() {
     try {
       this.rutPaciente = await this.serviciobd.obtenerRutPorIdPaciente(this.idPaciente);
+      alert('RUT del paciente: ' + this.rutPaciente);
     } catch (error) {
       console.error('Error al obtener el RUT:', error);
       const alert = await this.alertController.create({
@@ -50,7 +53,6 @@ export class RegCausaEmergenciaPage implements OnInit {
       await alert.present();
     }
   }
-
   async guardarDetalles() {
     if (!this.motivo || !this.descripcionMotivo || !this.notas) {
       const alert = await this.alertController.create({
@@ -61,9 +63,9 @@ export class RegCausaEmergenciaPage implements OnInit {
       await alert.present();
     } else {
       try {
-        // Llamar al servicio para guardar la emergencia, pasando idPaciente como parámetro
+        // Llamar al servicio para guardar la emergencia
         await this.serviciobd.agregarEmergencia(this.motivo, this.descripcionMotivo, this.notas, this.idPaciente);
-
+  
         const alert = await this.alertController.create({
           header: 'Detalles Guardados',
           message: 'Los detalles de la causa de emergencia han sido guardados exitosamente.',
@@ -71,20 +73,17 @@ export class RegCausaEmergenciaPage implements OnInit {
             {
               text: 'OK',
               handler: () => {
-                this.navCtrl.navigateForward('/historial-casos', {
-                  state: {
-                    rutPaciente: this.rutPaciente
-                  }
-                });
-              }
-            }
+                // Pasa el RUT como parte de la URL
+                this.navCtrl.navigateForward(`/envio-info/${this.rutPaciente}`);
+              },
+            },
           ],
         });
         await alert.present();
       } catch (error) {
         alert('Error al intentar guardar la emergencia: ' + JSON.stringify(error));
-       
       }
     }
   }
+  
 }

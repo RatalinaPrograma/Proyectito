@@ -18,6 +18,8 @@ import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 import { File } from '@awesome-cordova-plugins/file/ngx';
 import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
 import { HttpClientModule } from '@angular/common/http';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -31,7 +33,8 @@ import { HttpClientModule } from '@angular/common/http';
     CommonModule,
     MatRadioModule,
     BrowserAnimationsModule,
-    HttpClientModule, // Incluye solo módulos aquí
+    HttpClientModule,
+    MatFormFieldModule 
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
