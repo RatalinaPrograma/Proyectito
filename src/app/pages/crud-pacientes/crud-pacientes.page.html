@@ -22,7 +22,7 @@
     <ion-card-content>
       <p><strong>Fecha de Nacimiento:</strong> {{ paciente.f_nacimiento | date: 'dd/MM/YYYY' }}</p>
       <p><strong>Edad:</strong> {{ calcularEdad(paciente.f_nacimiento) }} años</p>
-      <p><strong>Género:</strong> {{ paciente.idGenero }}</p>
+      <p><strong>Género:</strong> {{ paciente.genero }}</p>
       <p><strong>Télefono de Contacto:</strong> {{ paciente.telefono_contacto }}</p>
       <p><strong>¿Tiene signos vitales?</strong> {{ paciente.idSignosVitales ? 'SI' : 'NO'}}</p>
     </ion-card-content>

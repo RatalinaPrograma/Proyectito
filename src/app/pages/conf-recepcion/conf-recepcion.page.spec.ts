@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ConfRecepcionPage } from './conf-recepcion.page';
 import { ServiciobdService } from '../services/serviciobd.service';
 import { Router } from '@angular/router';
-import { AlertController, IonicModule } from '@ionic/angular';
+import { AlertController, IonicModule, NavController } from '@ionic/angular';
 import { of } from 'rxjs';
 
 describe('ConfRecepcionPage', () => {
@@ -11,6 +11,7 @@ describe('ConfRecepcionPage', () => {
   let serviciobdServiceMock: jasmine.SpyObj<ServiciobdService>;
   let routerMock: jasmine.SpyObj<Router>;
   let alertControllerMock: jasmine.SpyObj<AlertController>;
+  let navControllerMock: jasmine.SpyObj<NavController>;
 
   beforeEach(async () => {
     // Crear mocks
@@ -23,6 +24,7 @@ describe('ConfRecepcionPage', () => {
 
     routerMock = jasmine.createSpyObj('Router', ['navigate']);
     alertControllerMock = jasmine.createSpyObj('AlertController', ['create']);
+    navControllerMock = jasmine.createSpyObj('NavController', ['navigateForward', 'navigateBack']);
 
     // Configurar respuestas mock
     serviciobdServiceMock.obtenerMedicoPorRut.and.returnValue(
@@ -50,6 +52,7 @@ describe('ConfRecepcionPage', () => {
         { provide: ServiciobdService, useValue: serviciobdServiceMock },
         { provide: Router, useValue: routerMock },
         { provide: AlertController, useValue: alertControllerMock },
+        { provide: NavController, useValue: navControllerMock },
       ],
     }).compileComponents();
 
@@ -71,5 +74,35 @@ describe('ConfRecepcionPage', () => {
     expect(component.apellidoMedico).toBe('Pérez');
     expect(component.motivoEmergencia).toBe('Accidente');
     expect(component.observacionesEmergencia).toBe('Estable');
+  });
+
+  it('debería confirmar la recepción como correcta', async () => {
+    component.rutMedico = '12345678-9';
+    component.idEmergencia = 1;
+
+    await component.confirmarRecepcion();
+
+    expect(serviciobdServiceMock.obtenerMedicoPorRut).toHaveBeenCalledWith('12345678-9');
+    expect(serviciobdServiceMock.guardarConfirmacion).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        idEmerg: 1,
+        idPersona: 1,
+        estado_confirmacion: true,
+      })
+    );
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/vista-medico']);
+  });
+
+  it('debería confirmar la recepción como incorrecta', async () => {
+    const alertSpy = jasmine.createSpyObj('Alert', ['present']);
+    alertControllerMock.create.and.returnValue(Promise.resolve(alertSpy as any));
+
+    component.rutMedico = '12345678-9';
+    component.idEmergencia = 1;
+
+    await component.confirmarRecepcionIncorrecta();
+
+    expect(alertControllerMock.create).toHaveBeenCalled();
+    expect(alertSpy.present).toHaveBeenCalled();
   });
 });

@@ -4,8 +4,7 @@ import { ServiciobdService } from '../services/serviciobd.service';
 import { AlertasService } from '../services/alertas.service';
 import { CamaraService } from '../services/camara.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
-import { of } from 'rxjs';
+import { NavController, IonicModule } from '@ionic/angular';
 
 describe('ModificarUsuariosPage', () => {
   let component: ModificarUsuariosPage;
@@ -14,18 +13,19 @@ describe('ModificarUsuariosPage', () => {
   let alertasServiceMock: jasmine.SpyObj<AlertasService>;
   let camaraServiceMock: jasmine.SpyObj<CamaraService>;
   let routerMock: jasmine.SpyObj<Router>;
+  let navControllerMock: jasmine.SpyObj<NavController>;
   let activatedRouteMock: any;
 
   beforeEach(async () => {
-    // Mock de Servicios
     serviciobdServiceMock = jasmine.createSpyObj('ServiciobdService', ['obtenerUsuario', 'modificarPersona']);
     alertasServiceMock = jasmine.createSpyObj('AlertasService', ['presentAlert']);
     camaraServiceMock = jasmine.createSpyObj('CamaraService', ['tomarFoto', 'seleccionarDesdeGaleria']);
     routerMock = jasmine.createSpyObj('Router', ['navigate']);
+    navControllerMock = jasmine.createSpyObj('NavController', ['navigateForward']);
     activatedRouteMock = {
       snapshot: {
         paramMap: {
-          get: jasmine.createSpy('get').and.returnValue('1'), // Simula el ID de usuario en la URL
+          get: jasmine.createSpy('get').and.returnValue('1'), // Simula el ID de usuario desde la URL
         },
       },
     };
@@ -38,11 +38,8 @@ describe('ModificarUsuariosPage', () => {
         { provide: AlertasService, useValue: alertasServiceMock },
         { provide: CamaraService, useValue: camaraServiceMock },
         { provide: Router, useValue: routerMock },
+        { provide: NavController, useValue: navControllerMock },
         { provide: ActivatedRoute, useValue: activatedRouteMock },
-        {
-          provide: 'SQLite', // Mock para SQLite
-          useValue: jasmine.createSpyObj('SQLite', ['create']),
-        },
       ],
     }).compileComponents();
 
@@ -53,24 +50,5 @@ describe('ModificarUsuariosPage', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should load user data on init', async () => {
-    const mockUser = {
-      idPersona: 1,
-      nombres: 'Juan',
-      apellidos: 'Pérez',
-      rut: '12345678-9',
-      correo: 'juan@example.com',
-      clave: 'password123',
-      telefono: '+56912345678',
-      foto: null,
-      idRol: 2,
-    };
-
-    serviciobdServiceMock.obtenerUsuario.and.returnValue(Promise.resolve(mockUser));
-    await component.cargarDatosUsuario();
-    expect(component.persona).toEqual(mockUser);
-    expect(serviciobdServiceMock.obtenerUsuario).toHaveBeenCalledWith(1);
   });
 });

@@ -32,7 +32,7 @@ const routes: Routes = [
     loadChildren: () => import('./pages/envio-info/envio-info.module').then( m => m.EnvioInfoPageModule)
   },
   {
-    path: 'conf-recepcion/:rut',
+    path: 'conf-recepciont',
     loadChildren: () => import('./pages/conf-recepcion/conf-recepcion.module').then( m => m.ConfRecepcionPageModule)
   },
   {

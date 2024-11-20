@@ -108,6 +108,10 @@ export class ServiciobdService {
   
         // Inserta usuario predeterminado
         await this.insertarUsuarioPredeterminado();
+
+        
+        // Inserta generos
+        await this.insertarGenerosPredeterminado();
   
         this.isDBReady.next(true);
         this.dbIsCreated = true;
@@ -334,7 +338,17 @@ agregarPaciente(
 
 
   consultartablaPaciente(): Promise<Pacientes[]> {
-    return this.database.executeSql('SELECT * FROM paciente', []).then(res => {
+    return this.database.executeSql(`
+      SELECT  idPaciente,
+              p.nombre,
+              f_nacimiento,
+              g.nombre as genero,
+              rut,
+              telefono_contacto,
+              idSigno
+      FROM paciente p
+      JOIN genero g ON p.idgenero = g.idgenero
+      `, []).then(res => {
       let itemsR: Pacientes[] = [];
       if (res.rows.length > 0) {
         for (var i = 0; i < res.rows.length; i++) {
@@ -342,7 +356,7 @@ agregarPaciente(
             idPaciente: res.rows.item(i).idPaciente,
             nombre: res.rows.item(i).nombre,
             f_nacimiento: res.rows.item(i).f_nacimiento,
-            idGenero: res.rows.item(i).idGenero,
+            genero: res.rows.item(i).genero,
             rut: res.rows.item(i).rut,
             telefono_contacto: res.rows.item(i).telefono_contacto,
             idSignosVitales: res.rows.item(i).idSigno
@@ -728,6 +742,29 @@ agregarPaciente(
       console.log('Usuario predeterminado insertado o actualizado.');
     } catch (error) {
       console.error('Error al insertar usuario predeterminado:', error);
+      throw error;
+    }
+  }
+
+  async insertarGenerosPredeterminado() {
+    const valores =  [
+      [1, 'Masculino'],
+      [2, 'Femenino'],
+      [3, 'Otro'],
+    ];
+
+    try {
+      for (const valor of valores) {
+        const sql = `
+          INSERT OR IGNORE INTO genero (idgenero, nombre) 
+          VALUES (?, ?)`;
+
+        await this.database.executeSql(sql, valor);
+        console.log(`Género insertado: ${valor[1]}`);
+      }
+      console.log('Todos los géneros predeterminados han sido insertados.');
+    } catch (error) {
+      console.error('Error al insertar géneros predeterminados:', error);
       throw error;
     }
   }

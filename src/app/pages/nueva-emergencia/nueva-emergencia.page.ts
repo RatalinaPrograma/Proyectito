@@ -90,7 +90,7 @@ export class NuevaEmergenciaPage implements OnInit {
       const res = await this.baseDatos.agregarPaciente(
         this.paciente.nombre,
         this.paciente.f_nacimiento,
-        this.paciente.idGenero,
+        this.paciente.idGenero ?? 0,
         this.paciente.rut,
         this.paciente.telefono_contacto
       );
@@ -131,7 +131,7 @@ export class NuevaEmergenciaPage implements OnInit {
     }
   
     // Validación del género
-    if (![1, 2, 3].includes(this.paciente.idGenero)) {
+    if (this.paciente.idGenero && ![1, 2, 3].includes(this.paciente.idGenero)) {
       alert('Por favor, seleccione un género válido para el paciente.');
       console.log('Validación fallida: Género inválido o no seleccionado');
       return false;

@@ -2,7 +2,8 @@ export class Pacientes {
     idPaciente?: number;
     nombre!: string;
     f_nacimiento!: Date;
-    idGenero!:number;
+    idGenero?:number;
+    genero?:string;
     rut!:string;
     telefono_contacto!:string;
     edad?: number;

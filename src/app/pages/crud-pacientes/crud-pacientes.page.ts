@@ -59,8 +59,8 @@ export class CrudPacientesPage implements OnInit, OnDestroy, ViewWillEnter {
         console.log(this.pacientes); // Debugging
       })
       .catch((error) => {
-        console.error(`ERROR ${error}`);
-        alert(`ERROR al tratar de obtener pacientes.`);
+        console.error(`ERROR ${JSON.stringify(error)}`);
+        alert(`ERROR al tratar de obtener pacientes. ${JSON.stringify(error)}`);
       });
   }
   
@@ -77,7 +77,7 @@ export class CrudPacientesPage implements OnInit, OnDestroy, ViewWillEnter {
       await this.baseDatos.agregarPaciente(
         this.paciente.nombre,
         new Date(this.paciente.f_nacimiento),
-        this.paciente.idGenero,
+        this.paciente.idGenero ?? 0,
         this.paciente.rut,
         this.paciente.telefono_contacto
       ); // Guardar en la base de datos

@@ -28,6 +28,8 @@ export class ConfRecepcionPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    const usuario = localStorage.getItem('LSusuario');
+    this.rutMedico = usuario ? JSON.parse(usuario).rut : '12345678-9';
     this.cargarDetalles();
   }
 
@@ -91,7 +93,7 @@ export class ConfRecepcionPage implements OnInit {
               const alertElement = await this.alertCtrl.create({
                 header: 'Confirmación',
                 message: 'Recepción confirmada como incorrecta',
-                buttons: ['OK']
+                buttons: ['OK'],
               });
               await alertElement.present();
               this.router.navigate(['/vista-medico']);
@@ -100,7 +102,7 @@ export class ConfRecepcionPage implements OnInit {
               const alertElement = await this.alertCtrl.create({
                 header: 'Error',
                 message: 'Error al confirmar la recepción: ' + JSON.stringify(error),
-                buttons: ['OK']
+                buttons: ['OK'],
               });
               await alertElement.present();
             } finally {
@@ -123,3 +125,4 @@ export class ConfRecepcionPage implements OnInit {
     await alert.present();
   }
 }
+
