@@ -13,8 +13,8 @@ export class RegCausaEmergenciaPage implements OnInit {
   motivo!: string;
   descripcionMotivo!: string;
   notas!: string;
-  idPaciente!: number;
-  rutPaciente: string | null = null;
+  idPaciente: number  | 0;
+  rutPaciente: string | null;
 
   constructor(
     private alertController: AlertController,
@@ -23,36 +23,13 @@ export class RegCausaEmergenciaPage implements OnInit {
     private router: Router,
     private route: ActivatedRoute
   ) {
-    // Obtiene el estado de la navegación actual
-    const navigation = this.router.getCurrentNavigation();
-    if (navigation?.extras.state) {
-      this.idPaciente = navigation.extras.state['idPaciente'];
-      this.rutPaciente = navigation.extras.state['rutPaciente'];
-    }
+    this.rutPaciente = this.route.snapshot.paramMap.get('rut') || '';
+    this.idPaciente = Number(this.route.snapshot.paramMap.get('idPaciente'));
   }
 
   ngOnInit() {
-    alert('ID Paciente: ' + this.idPaciente);
-    alert('RUT Paciente: ' + this.rutPaciente);
-    if (this.idPaciente && !this.rutPaciente) {
-      this.obtenerRut();
-    }
   }
 
-  async obtenerRut() {
-    try {
-      this.rutPaciente = await this.serviciobd.obtenerRutPorIdPaciente(this.idPaciente);
-      alert('RUT del paciente: ' + this.rutPaciente);
-    } catch (error) {
-      console.error('Error al obtener el RUT:', error);
-      const alert = await this.alertController.create({
-        header: 'Error',
-        message: 'No se pudo obtener el RUT del paciente.',
-        buttons: ['OK'],
-      });
-      await alert.present();
-    }
-  }
   async guardarDetalles() {
     if (!this.motivo || !this.descripcionMotivo || !this.notas) {
       const alert = await this.alertController.create({

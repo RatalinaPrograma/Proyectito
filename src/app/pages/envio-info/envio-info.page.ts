@@ -35,14 +35,12 @@ export class EnvioInfoPage implements OnInit {
 
   ngOnInit() {
     this.rut = this.route.snapshot.paramMap.get('rut') || '';
-    alert('Rut: '+this.rut);
     this.obteneralPaciente();
   }
   
   obteneralPaciente() {    
     this.baseDatos.obtenerPaciente(this.rut)
       .then((res) => {
-        alert('Paciente encontrado '+JSON.stringify(res));
         res.edad = new Date().getFullYear() - new Date(res.f_nacimiento).getFullYear();
         this.paciente = res;
       })

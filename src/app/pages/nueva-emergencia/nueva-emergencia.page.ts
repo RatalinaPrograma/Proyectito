@@ -25,6 +25,8 @@ export class NuevaEmergenciaPage implements OnInit {
   telefono_contacto: '+569',
   };
 
+  rutNuevoPaciente: string | null = null;
+
   constructor(
     private router: Router, 
     private baseDatos: ServiciobdService,
@@ -32,7 +34,10 @@ export class NuevaEmergenciaPage implements OnInit {
   ) {}
 
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.paciente.rut = localStorage.getItem('rutNuevoPaciente') || '';
+    localStorage.removeItem('rutNuevoPaciente');
+  }
 
 
   private validarRut(rut: string): boolean {
@@ -91,7 +96,7 @@ export class NuevaEmergenciaPage implements OnInit {
       );
       
       console.log('Paciente guardado con éxito:', res);
-      this.router.navigate(['/reg-causaemergencia',this.paciente.rut]);
+      this.router.navigate(['/reg-causaemergencia',this.paciente.rut, res]);
 
   
     } catch (error) {

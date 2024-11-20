@@ -44,6 +44,7 @@ export class PacienteExistePage {
     return rutRegex.test(rut.trim());
   }
   async mostrarAlertaPacienteNoEncontrado() {
+    localStorage.setItem('rutNuevoPaciente', this.rut);
     const alert = await this.alertController.create({
       header: 'Paciente No Encontrado',
       message: 'El paciente no se encuentra en la base de datos. Será redirigido para registrarlo.',
