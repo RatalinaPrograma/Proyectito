@@ -20,6 +20,7 @@ export class RegisterParamedicoPage {
     foto: '',
     idRol: 2, // Rol por defecto para el paramédico
   };
+
   coincidenContrasenas: boolean = true;
 
   constructor(
@@ -43,8 +44,7 @@ export class RegisterParamedicoPage {
         this.resetFormulario();
         this.irLogin();
       } else {
-        this.alertasService.presentAlert('Error en registro', 'Este usuario ya está registrado.');
-        this.resetFormulario();
+        this.alertasService.presentAlert('Error en registro', 'El usuario ya está registrado.');
       }
     } catch (error) {
       console.error('Error en registro:', error);
@@ -74,11 +74,6 @@ export class RegisterParamedicoPage {
       return 'El apellido debe tener al menos 2 caracteres y solo contener letras y espacios.';
     }
   
-    // Validar RUT con el formato correcto
-    if (!/^[0-9]{7,8}-[0-9Kk]{1}$/.test(this.persona.rut)) {
-      return 'El RUT debe tener el formato 12345678-9.';
-    }
-  
     const rutNormalizado = this.serviciobd.normalizarRut(this.persona.rut);
     if (!this.serviciobd.validarRutCompleto(rutNormalizado)) {
       return 'El RUT ingresado es inválido.';
@@ -103,28 +98,6 @@ export class RegisterParamedicoPage {
     return '';
   }
   
-
-  private validarRut(rut: string): boolean {
-    const rutLimpio = rut.replace(/\./g, '').replace('-', '').trim();
-    if (rutLimpio.length < 8 || rutLimpio.length > 9) return false;
-  
-    const cuerpo = rutLimpio.slice(0, -1);
-    const dv = rutLimpio.slice(-1).toUpperCase();
-  
-    let suma = 0;
-    let multiplicador = 2;
-  
-    for (let i = cuerpo.length - 1; i >= 0; i--) {
-      suma += parseInt(cuerpo.charAt(i), 10) * multiplicador;
-      multiplicador = multiplicador === 7 ? 2 : multiplicador + 1;
-    }
-  
-    const dvEsperado = 11 - (suma % 11);
-    const dvCalculado = dvEsperado === 11 ? '0' : dvEsperado === 10 ? 'K' : dvEsperado.toString();
-  
-    return dv === dvCalculado;
-  }
-
   verificarCoincidenciaContrasenas(): boolean {
     this.coincidenContrasenas = this.persona.clave === this.persona.confirmarClave;
     return this.coincidenContrasenas;
@@ -159,10 +132,4 @@ export class RegisterParamedicoPage {
   async irLogin() {
     await this.router.navigate(['/login-paramedico']);
   }
-
-async prellenarPrefijo() {
-    if (this.persona.telefono === '+569') {
-      this.persona.telefono = '+569';
-    }
-  }  
 }

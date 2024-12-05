@@ -552,103 +552,94 @@ export class ServiciobdService {
 
 
 //////////////////////////////////////////////////////////////////////
-  async register(persona: any): Promise<boolean> {
-    // Normaliza el RUT
-    persona.rut = this.normalizarRut(persona.rut);
-  
-    // Valida el formato del RUT
-    if (!/^[0-9]{7,8}-[0-9Kk]{1}$/.test(persona.rut)) {
-      this.AlertasService.presentAlert('Error en registro', 'El RUT debe tener el formato 12345678-9.');
-      return false;
-    }
-  
-    // Valida el RUT completo
-    if (!this.validarRutCompleto(persona.rut)) {
-      this.AlertasService.presentAlert('Error en registro', 'El RUT ingresado es inválido.');
-      return false;
-    }
-  
-    // Verifica si el usuario ya existe por RUT o correo
-    const queryRut = 'SELECT COUNT(*) as count FROM persona WHERE rut = ?';
-    const queryCorreo = 'SELECT COUNT(*) as count FROM persona WHERE correo = ?';
-  
-    const rutExiste = await this.database.executeSql(queryRut, [persona.rut]);
-    const correoExiste = await this.database.executeSql(queryCorreo, [persona.correo]);
-  
-    if (rutExiste.rows.item(0).count > 0) {
-      this.AlertasService.presentAlert('Error en registro', 'El RUT ya está registrado.');
-      return false;
-    }
-  
-    if (correoExiste.rows.item(0).count > 0) {
-      this.AlertasService.presentAlert('Error en registro', 'El correo ya está registrado.');
-      return false;
-    }
-  
-    // Inserta el usuario
-    const query = `
-      INSERT INTO persona (nombres, apellidos, rut, correo, clave, telefono, foto, idRol) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-    const values = [
-      persona.nombres.trim(),
-      persona.apellidos.trim(),
-      persona.rut.trim(),
-      persona.correo.trim(),
-      persona.clave,
-      persona.telefono,
-      persona.foto || null,
-      persona.idRol,
-    ];
-  
-    try {
-      await this.database.executeSql(query, values);
-      return true;
-    } catch (error) {
-      console.error('Error al registrar usuario:', error);
-  
-      if ((error as any).code === 'SQLITE_CONSTRAINT') {
-        if ((error as any).message.includes('rut')) {
-          this.AlertasService.presentAlert('Error en registro', 'El RUT ya está registrado.');
-        } else if ((error as any).message.includes('correo')) {
-          this.AlertasService.presentAlert('Error en registro', 'El correo ya está registrado.');
-        }
-      } else {
-        this.AlertasService.presentAlert('Error en registro', 'El registro falló. Verifique los datos.');
+async register(persona: any): Promise<boolean> {
+  persona.rut = this.normalizarRut(persona.rut);
+
+  // Verificar si el RUT o correo ya están registrados
+  const queryRut = 'SELECT COUNT(*) as count FROM persona WHERE rut = ?';
+  const queryCorreo = 'SELECT COUNT(*) as count FROM persona WHERE correo = ?';
+
+  const rutExiste = await this.database.executeSql(queryRut, [persona.rut]);
+  if (rutExiste.rows.item(0).count > 0) {
+    this.AlertasService.presentAlert('Error en registro', 'El RUT ya está registrado.');
+    return false;
+  }
+
+  const correoExiste = await this.database.executeSql(queryCorreo, [persona.correo]);
+  if (correoExiste.rows.item(0).count > 0) {
+    this.AlertasService.presentAlert('Error en registro', 'El correo ya está registrado.');
+    return false;
+  }
+
+  // Validar formato y dígito verificador del RUT
+  if (!/^[0-9]{7,8}-[0-9Kk]{1}$/.test(persona.rut)) {
+    this.AlertasService.presentAlert('Error en registro', 'El RUT debe tener el formato 12345678-9.');
+    return false;
+  }
+
+  if (!this.validarRutCompleto(persona.rut)) {
+    this.AlertasService.presentAlert('Error en registro', 'El RUT ingresado es inválido.');
+    return false;
+  }
+
+  // Intentar insertar el usuario
+  const query = `
+    INSERT INTO persona (nombres, apellidos, rut, correo, clave, telefono, foto, idRol) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+  const values = [
+    persona.nombres.trim(),
+    persona.apellidos.trim(),
+    persona.rut.trim(),
+    persona.correo.trim(),
+    persona.clave,
+    persona.telefono,
+    persona.foto || null,
+    persona.idRol,
+  ];
+
+  try {
+    await this.database.executeSql(query, values);
+    return true;
+  } catch (error) {
+    console.error('Error al registrar usuario:', error);
+
+    if ((error as any).code === 'SQLITE_CONSTRAINT') {
+      if ((error as any).message.includes('rut')) {
+        this.AlertasService.presentAlert('Error en registro', 'El RUT ya está registrado.');
+      } else if ((error as any).message.includes('correo')) {
+        this.AlertasService.presentAlert('Error en registro', 'El correo ya está registrado.');
       }
-  
-      return false;
-    }
-  }
-  
-
-
-  ////////////////////////////////////////////////
-  normalizarRut(rut: string): string {
-    return rut.trim().replace(/[^0-9Kk-]/g, '').toUpperCase();
-  }
-  
-
-  validarRutCompleto(rut: string): boolean {
-    const rutLimpio = this.normalizarRut(rut);
-    if (rutLimpio.length < 8 || rutLimpio.length > 9) return false;
-
-    const cuerpo = rutLimpio.slice(0, -1);
-    const dv = rutLimpio.slice(-1).toUpperCase();
-
-    let suma = 0;
-    let multiplicador = 2;
-
-    for (let i = cuerpo.length - 1; i >= 0; i--) {
-      suma += parseInt(cuerpo.charAt(i), 10) * multiplicador;
-      multiplicador = multiplicador === 7 ? 2 : multiplicador + 1;
+    } else {
+      this.AlertasService.presentAlert('Error en registro', 'El registro falló. Verifique los datos.');
     }
 
-    const dvEsperado = 11 - (suma % 11);
-    const dvCalculado = dvEsperado === 11 ? '0' : dvEsperado === 10 ? 'K' : dvEsperado.toString();
-
-    return dv === dvCalculado;
+    return false;
   }
+}
+
+normalizarRut(rut: string): string {
+  return rut.trim().replace(/[^0-9Kk-]/g, '').toUpperCase();
+}
+
+validarRutCompleto(rut: string): boolean {
+  const rutLimpio = this.normalizarRut(rut);
+  if (!/^[0-9]{7,8}-[0-9Kk]{1}$/.test(rutLimpio)) return false;
+
+  const [cuerpo, dv] = rutLimpio.split('-');
+  let suma = 0;
+  let multiplicador = 2;
+
+  for (let i = cuerpo.length - 1; i >= 0; i--) {
+    suma += parseInt(cuerpo.charAt(i), 10) * multiplicador;
+    multiplicador = multiplicador === 7 ? 2 : multiplicador + 1;
+  }
+
+  const dvCalculado = 11 - (suma % 11);
+  const dvEsperado = dvCalculado === 11 ? '0' : dvCalculado === 10 ? 'K' : dvCalculado.toString();
+
+  return dvEsperado === dv.toUpperCase();
+}
 
 
 
