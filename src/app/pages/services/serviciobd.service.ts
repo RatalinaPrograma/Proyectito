@@ -82,47 +82,44 @@ export class ServiciobdService {
 
   crearBD() {
     if (this.dbIsCreated) return;
-  
+
     this.platform.ready().then(async () => {
       try {
         const db = await this.sqlite.create({
           name: 'pulseTrack.db',
           location: 'default',
         });
-  
+
         this.database = db;
-        console.log("Base de datos creada correctamente.");
-  
-        // // Elimina tablas (solo en desarrollo)
-        // await this.database.executeSql('DROP TABLE IF EXISTS persona;', []);
-        // await this.database.executeSql('DROP TABLE IF EXISTS paciente;', []);
-        // await this.database.executeSql('DROP TABLE IF EXISTS emergencia;', []);
-        // await this.database.executeSql('DROP TABLE IF EXISTS hospital;', []);
-  
+       console.log('Info', 'Base de datos creada correctamente.');
+
+        // Elimina tablas (solo en desarrollo)
+         await this.database.executeSql('DROP TABLE IF EXISTS persona;', []);
+
         // Crea las tablas
+        console.log('Info', 'Creando tablas...');
         await this.crearTablas();
-  
+        console.log('Info', 'Tablas creadas correctamente.');
+
         // Inserta datos iniciales
         await this.verificarTablaPersona();
-        await this.insertarEstadosIniciales();
-  
-        // Inserta usuario predeterminado
-        await this.insertarUsuarioPredeterminado();
 
-        
-        // Inserta generos
-        await this.insertarGenerosPredeterminado();
+        await this.insertarEstadosIniciales();
+
+        await this.insertarUsuarioPredeterminado();
   
+        await this.insertarGenerosPredeterminado();
+
+
         this.isDBReady.next(true);
         this.dbIsCreated = true;
+        await this.presentAlert('Éxito', 'Base de datos inicializada correctamente.');
       } catch (error) {
-        console.error("Error al inicializar la base de datos:", error);
-        this.presentAlert('Error', 'No se pudo inicializar la base de datos.');
+        console.error('Error al inicializar la base de datos:', error);
+        await this.presentAlert('Error', `No se pudo inicializar la base de datos. Error: ${(error as any).message}`);
       }
     });
   }
-  
-  
 
 
   async crearTablas() {
@@ -142,18 +139,20 @@ export class ServiciobdService {
       this.tablaConfirmacion,
       this.tablaEstado,
     ];
-  
+
     for (const query of tablas) {
       try {
         await this.database.executeSql(query, []);
         console.log(`Tabla creada correctamente: ${query}`);
       } catch (e) {
-        console.error('Error creando tabla:', e);
-        throw e;
+        console.error('Error creando tabla:', query, e);
+        throw new Error(`Error creando tabla: ${query}`);
       }
     }
   }
-  
+
+
+
 
   async presentAlert(header: string, message: string) {
     const alert = await this.alertController.create({
@@ -296,44 +295,44 @@ export class ServiciobdService {
 
   // PACIENTE
 
-agregarPaciente(
-  nombre: string,
-  f_nacimiento: Date,
-  idGenero: number,
-  rut: string,
-  telefono_contacto: string
-): Promise<number> {
-  return this.verificarPaciente(rut).then((existe) => {
-    if (existe) {
-      // Si el paciente ya existe, mostramos un error
-      console.log('Agregar paciente', 'El paciente con ese RUT ya está registrado.');
-      return Promise.reject(new Error('Paciente ya registrado'));
-    }
+  agregarPaciente(
+    nombre: string,
+    f_nacimiento: Date,
+    idGenero: number,
+    rut: string,
+    telefono_contacto: string
+  ): Promise<number> {
+    return this.verificarPaciente(rut).then((existe) => {
+      if (existe) {
+        // Si el paciente ya existe, mostramos un error
+        console.log('Agregar paciente', 'El paciente con ese RUT ya está registrado.');
+        return Promise.reject(new Error('Paciente ya registrado'));
+      }
 
-    // Si no existe, lo agregamos a la base de datos
-    const query = `INSERT INTO paciente (nombre, f_nacimiento, idGenero, rut, telefono_contacto) VALUES (?, ?, ?, ?, ?)`;
-    return this.database
-      .executeSql(query, [
-        nombre,
-        f_nacimiento.toISOString(), // Asegúrate de pasar la fecha en formato ISO
-        idGenero,
-        rut,
-        telefono_contacto,
-      ])
-      .then((res) => {
-        if (res.insertId) {
-          console.log('Paciente agregado correctamente con ID:', res.insertId);
-          return res.insertId; // Retorna el ID del paciente recién creado
-        } else {
-          throw new Error('No se generó un ID para el paciente.');
-        }
-      });
-  }).catch((err) => {
-    // Captura cualquier error que ocurra en el proceso
-    this.AlertasService.presentAlert('Agregar paciente', 'Ocurrió un error: ' + err.message);
-    return Promise.reject(new Error(`Error al agregar el paciente: ${err.message}`));
-  });
-}
+      // Si no existe, lo agregamos a la base de datos
+      const query = `INSERT INTO paciente (nombre, f_nacimiento, idGenero, rut, telefono_contacto) VALUES (?, ?, ?, ?, ?)`;
+      return this.database
+        .executeSql(query, [
+          nombre,
+          f_nacimiento.toISOString(), // Asegúrate de pasar la fecha en formato ISO
+          idGenero,
+          rut,
+          telefono_contacto,
+        ])
+        .then((res) => {
+          if (res.insertId) {
+            console.log('Paciente agregado correctamente con ID:', res.insertId);
+            return res.insertId; // Retorna el ID del paciente recién creado
+          } else {
+            throw new Error('No se generó un ID para el paciente.');
+          }
+        });
+    }).catch((err) => {
+      // Captura cualquier error que ocurra en el proceso
+      this.AlertasService.presentAlert('Agregar paciente', 'Ocurrió un error: ' + err.message);
+      return Promise.reject(new Error(`Error al agregar el paciente: ${err.message}`));
+    });
+  }
 
 
 
@@ -551,13 +550,42 @@ agregarPaciente(
   }
 
 
+
+//////////////////////////////////////////////////////////////////////
   async register(persona: any): Promise<boolean> {
-    // Verifica los datos antes de intentar el registro
-    if (!this.validarDatos(persona)) {
-      this.AlertasService.presentAlert('Error en registro', 'Datos incompletos o inválidos');
+    // Normaliza el RUT
+    persona.rut = this.normalizarRut(persona.rut);
+  
+    // Valida el formato del RUT
+    if (!/^[0-9]{7,8}-[0-9Kk]{1}$/.test(persona.rut)) {
+      this.AlertasService.presentAlert('Error en registro', 'El RUT debe tener el formato 12345678-9.');
       return false;
     }
-
+  
+    // Valida el RUT completo
+    if (!this.validarRutCompleto(persona.rut)) {
+      this.AlertasService.presentAlert('Error en registro', 'El RUT ingresado es inválido.');
+      return false;
+    }
+  
+    // Verifica si el usuario ya existe por RUT o correo
+    const queryRut = 'SELECT COUNT(*) as count FROM persona WHERE rut = ?';
+    const queryCorreo = 'SELECT COUNT(*) as count FROM persona WHERE correo = ?';
+  
+    const rutExiste = await this.database.executeSql(queryRut, [persona.rut]);
+    const correoExiste = await this.database.executeSql(queryCorreo, [persona.correo]);
+  
+    if (rutExiste.rows.item(0).count > 0) {
+      this.AlertasService.presentAlert('Error en registro', 'El RUT ya está registrado.');
+      return false;
+    }
+  
+    if (correoExiste.rows.item(0).count > 0) {
+      this.AlertasService.presentAlert('Error en registro', 'El correo ya está registrado.');
+      return false;
+    }
+  
+    // Inserta el usuario
     const query = `
       INSERT INTO persona (nombres, apellidos, rut, correo, clave, telefono, foto, idRol) 
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -572,23 +600,56 @@ agregarPaciente(
       persona.foto || null,
       persona.idRol,
     ];
-
+  
     try {
       await this.database.executeSql(query, values);
       return true;
     } catch (error) {
-      console.error('Error al registrar usuario', error);
-
-      // Manejo de errores específicos
+      console.error('Error al registrar usuario:', error);
+  
       if ((error as any).code === 'SQLITE_CONSTRAINT') {
-        this.AlertasService.presentAlert('Error en registro', 'El RUT o correo ya están registrados.');
+        if ((error as any).message.includes('rut')) {
+          this.AlertasService.presentAlert('Error en registro', 'El RUT ya está registrado.');
+        } else if ((error as any).message.includes('correo')) {
+          this.AlertasService.presentAlert('Error en registro', 'El correo ya está registrado.');
+        }
       } else {
-        this.AlertasService.presentAlert('Error en registro', 'El registro falló. Verifique los datos');
+        this.AlertasService.presentAlert('Error en registro', 'El registro falló. Verifique los datos.');
       }
-
+  
       return false;
     }
   }
+  
+
+
+  ////////////////////////////////////////////////
+  normalizarRut(rut: string): string {
+    return rut.trim().replace(/[^0-9Kk-]/g, '').toUpperCase();
+  }
+  
+
+  validarRutCompleto(rut: string): boolean {
+    const rutLimpio = this.normalizarRut(rut);
+    if (rutLimpio.length < 8 || rutLimpio.length > 9) return false;
+
+    const cuerpo = rutLimpio.slice(0, -1);
+    const dv = rutLimpio.slice(-1).toUpperCase();
+
+    let suma = 0;
+    let multiplicador = 2;
+
+    for (let i = cuerpo.length - 1; i >= 0; i--) {
+      suma += parseInt(cuerpo.charAt(i), 10) * multiplicador;
+      multiplicador = multiplicador === 7 ? 2 : multiplicador + 1;
+    }
+
+    const dvEsperado = 11 - (suma % 11);
+    const dvCalculado = dvEsperado === 11 ? '0' : dvEsperado === 10 ? 'K' : dvEsperado.toString();
+
+    return dv === dvCalculado;
+  }
+
 
 
   // Obtener persona por ID
@@ -710,44 +771,51 @@ agregarPaciente(
       throw error;
     }
   }
-  
 
 
   async insertarUsuarioPredeterminado() {
     const valores = [
       'Catalina',
       'Gutiérrez',
-      'catalinagutierrez2516@gmail.com',
-      'Admin.123',
-      '+56994125336',
-      null,
-      1,
-      '21273766-6',
+      'catalinagutierrez2516@gmail.com', // Correo predeterminado
+      'Admin.123', // Contraseña
+      '+56994125336', // Teléfono
+      null, // Foto
+      1, // Rol (Admin)
+      this.normalizarRut('21273766-6'), // Normaliza el RUT
     ];
+
     try {
-      const existe = await this.verificarUsuario('21273766-6');
-      console.log('¿Usuario ya existe?', existe); // Log para depuración
-      let sql = '';
-  
-      if (existe) {
-        sql = `
-          UPDATE persona SET nombres = ?, apellidos = ?, correo = ?, clave = ?, telefono = ?, foto = ?, idRol = ? WHERE rut = ?`;
-      } else {
-        sql = `
-          INSERT INTO persona (nombres, apellidos, correo, clave, telefono, foto, idRol, rut) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+      // Verifica si el usuario ya existe (por correo o RUT)
+      const existeCorreo = await this.database.executeSql('SELECT COUNT(*) as count FROM persona WHERE correo = ?', [valores[2]]);
+      const existeRut = await this.database.executeSql('SELECT COUNT(*) as count FROM persona WHERE rut = ?', [valores[7]]);
+
+      if (existeCorreo.rows.item(0).count > 0) {
+        console.log('El correo ya está registrado.');
+        return; // No hace nada si el correo ya existe
       }
-  
-      await this.database.executeSql(sql, valores);
-      console.log('Usuario predeterminado insertado o actualizado.');
+
+      if (existeRut.rows.item(0).count > 0) {
+        console.log('El RUT ya está registrado.');
+        return; // No hace nada si el RUT ya existe
+      }
+
+      // Si no existe, inserta el usuario
+      const query = `
+        INSERT INTO persona (nombres, apellidos, correo, clave, telefono, foto, idRol, rut) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+      await this.database.executeSql(query, valores);
+      console.log('Usuario predeterminado insertado correctamente.');
     } catch (error) {
       console.error('Error al insertar usuario predeterminado:', error);
-      throw error;
+      throw error; // Lanza el error para manejarlo más arriba
     }
   }
 
+
   async insertarGenerosPredeterminado() {
-    const valores =  [
+    const valores = [
       [1, 'Masculino'],
       [2, 'Femenino'],
       [3, 'Otro'],
@@ -768,7 +836,7 @@ agregarPaciente(
       throw error;
     }
   }
-  
+
   async verificarTablaPersona() {
     const query = "SELECT name FROM sqlite_master WHERE type='table' AND name='persona'";
     try {
@@ -782,29 +850,30 @@ agregarPaciente(
       console.error('Error al verificar la tabla "persona":', error);
     }
   }
-  
+
+
 
   async verificarUsuario(rut: string): Promise<boolean> {
-    console.log('Verificando usuario con RUT:', rut); // Debug log
-    const query = 'SELECT COUNT(1) as count FROM persona WHERE rut = ?';
+    const rutLimpio = this.normalizarRut(rut);
+    const query = 'SELECT COUNT(*) as count FROM persona WHERE rut = ?';
     try {
-      const res = await this.database.executeSql(query, [rut]);
-      console.log('Resultado de la consulta verificarUsuario:', res.rows.item(0).count);
+      const res = await this.database.executeSql(query, [rutLimpio]);
       return res.rows.item(0).count > 0;
     } catch (error) {
       console.error('Error al verificar usuario:', error);
       throw new Error('No se pudo verificar el usuario');
     }
   }
-  
-  
+
+
+
   async login(rut: string, password: string): Promise<any | null> {
     const query = 'SELECT * FROM persona WHERE rut = ? AND clave = ?';
-  
+
     try {
       const res = await this.database.executeSql(query, [rut, password]);
       console.log('Resultado de la consulta SQL:', res);
-  
+
       // Verifica si hay resultados en la consulta
       if (res.rows.length > 0) {
         const usuario = res.rows.item(0);
@@ -819,11 +888,11 @@ agregarPaciente(
       throw new Error('Error al consultar la base de datos: ' + (error as any).message);
     }
   }
-  
-  
-  
-  
-  
+
+
+
+
+
   async modificarClave(idPersona: number, nuevaClave: string): Promise<void> {
     const query = `UPDATE persona SET clave = ? WHERE idPersona = ?`;
     try {
@@ -906,7 +975,7 @@ agregarPaciente(
     // Lógica para recuperar clave
     return Promise.resolve(true);
   }
-  
+
 
   async guardarConfirmacion(confirmacion: Confirmacion): Promise<void> {
     const query = `
@@ -1127,40 +1196,40 @@ agregarPaciente(
   }
 
 
-async obtenerAmbulanciaPorPatente(patente: string): Promise<any> {
-  const query = `SELECT * FROM ambulancia WHERE patente = ?`;
-  try {
-    const res = await this.database.executeSql(query, [patente]);
-    if (res.rows.length > 0) {
-      return res.rows.item(0);
-    } else {
-      return null;
+  async obtenerAmbulanciaPorPatente(patente: string): Promise<any> {
+    const query = `SELECT * FROM ambulancia WHERE patente = ?`;
+    try {
+      const res = await this.database.executeSql(query, [patente]);
+      if (res.rows.length > 0) {
+        return res.rows.item(0);
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error('Error al obtener la ambulancia por patente:', error);
+      throw error;
     }
-  } catch (error) {
-    console.error('Error al obtener la ambulancia por patente:', error);
-    throw error;
   }
-}
 
-async obtenerMedicoPorRut(rut: string): Promise<any> {
-  const query = `SELECT idPersona FROM persona WHERE rut = ?`;
-  const res = await this.database.executeSql(query, [rut]);
-  return res.rows.length > 0 ? res.rows.item(0) : null;
-}
+  async obtenerMedicoPorRut(rut: string): Promise<any> {
+    const query = `SELECT idPersona FROM persona WHERE rut = ?`;
+    const res = await this.database.executeSql(query, [rut]);
+    return res.rows.length > 0 ? res.rows.item(0) : null;
+  }
 
 
-async obtenerEmergenciaPorId(idEmergencia: number): Promise<any> {
-  const query = `SELECT motivo, observaciones FROM emergencia WHERE idEmerg = ?`;
-  const res = await this.database.executeSql(query, [idEmergencia]);
-  return res.rows.length > 0 ? res.rows.item(0) : null;
-}
+  async obtenerEmergenciaPorId(idEmergencia: number): Promise<any> {
+    const query = `SELECT motivo, observaciones FROM emergencia WHERE idEmerg = ?`;
+    const res = await this.database.executeSql(query, [idEmergencia]);
+    return res.rows.length > 0 ? res.rows.item(0) : null;
+  }
 
-async obtenerMensajeHospitalPorEmergencia(idEmergencia: number): Promise<string> {
-  // Ejemplo de mensaje predefinido. Modifica según tu lógica
-  const query = `SELECT mensaje FROM hospital_mensajes WHERE idEmerg = ?`;
-  const res = await this.database.executeSql(query, [idEmergencia]);
-  return res.rows.length > 0 ? res.rows.item(0).mensaje : 'Sin mensaje disponible';
-}
+  async obtenerMensajeHospitalPorEmergencia(idEmergencia: number): Promise<string> {
+    // Ejemplo de mensaje predefinido. Modifica según tu lógica
+    const query = `SELECT mensaje FROM hospital_mensajes WHERE idEmerg = ?`;
+    const res = await this.database.executeSql(query, [idEmergencia]);
+    return res.rows.length > 0 ? res.rows.item(0).mensaje : 'Sin mensaje disponible';
+  }
 
 
 

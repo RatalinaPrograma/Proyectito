@@ -64,38 +64,45 @@ export class RegisterParamedicoPage {
     ) {
       return 'Todos los campos son obligatorios.';
     }
-
+  
     const soloLetrasYEspacios = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
     if (this.persona.nombres.length < 2 || !soloLetrasYEspacios.test(this.persona.nombres)) {
       return 'El nombre debe tener al menos 2 caracteres y solo contener letras y espacios.';
     }
-
+  
     if (this.persona.apellidos.length < 2 || !soloLetrasYEspacios.test(this.persona.apellidos)) {
       return 'El apellido debe tener al menos 2 caracteres y solo contener letras y espacios.';
     }
-
-    if (!this.validarRut(this.persona.rut)) {
+  
+    // Validar RUT con el formato correcto
+    if (!/^[0-9]{7,8}-[0-9Kk]{1}$/.test(this.persona.rut)) {
+      return 'El RUT debe tener el formato 12345678-9.';
+    }
+  
+    const rutNormalizado = this.serviciobd.normalizarRut(this.persona.rut);
+    if (!this.serviciobd.validarRutCompleto(rutNormalizado)) {
       return 'El RUT ingresado es inválido.';
     }
-
+  
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.persona.correo)) {
       return 'Formato de correo electrónico inválido.';
     }
-
+  
     if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{6,}$/.test(this.persona.clave)) {
       return 'La contraseña debe tener al menos 6 caracteres, con mayúsculas, minúsculas y un carácter especial.';
     }
-
+  
     if (!this.verificarCoincidenciaContrasenas()) {
       return 'Las contraseñas no coinciden.';
     }
-
+  
     if (!/^\+569[0-9]{8}$/.test(this.persona.telefono)) {
       return 'El teléfono debe seguir el formato +569XXXXXXXX.';
     }
-
+  
     return '';
   }
+  
 
   private validarRut(rut: string): boolean {
     const rutLimpio = rut.replace(/\./g, '').replace('-', '').trim();

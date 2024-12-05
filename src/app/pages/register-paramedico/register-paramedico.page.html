@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home"></ion-back-button>
+      <ion-back-button defaultHref="/login-paramedico"></ion-back-button>
       <ion-menu-button menu="emergenciasMenu"></ion-menu-button>
     </ion-buttons>
     <ion-title>Registro de Usuario</ion-title>
@@ -39,7 +39,7 @@
 
           <ion-item>
             <ion-label position="floating">Teléfono</ion-label>
-            <ion-input type="tel" [(ngModel)]="persona.telefono" name="telefono" required (ionFocus)="prellenarPrefijo()"></ion-input>
+            <ion-input type="tel" [(ngModel)]="persona.telefono" name="telefono" required></ion-input>
           </ion-item>
           <ion-note *ngIf="!persona.telefono.startsWith('+569') && registerForm.submitted" color="danger">Debe comenzar con +569.</ion-note>
 
