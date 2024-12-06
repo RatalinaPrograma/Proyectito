@@ -37,7 +37,6 @@ describe('HomePage', () => {
   it('debería abrir un navegador externo con una URL específica', async () => {
     const browserSpy = spyOn(Browser, 'open').and.returnValue(Promise.resolve()); // Mock de Browser.open
 
-    // Llamar al método y verificar la URL
     await component.abrirNavegador();
     expect(browserSpy).toHaveBeenCalledWith({ url: 'https://www.davila.cl' });
 
