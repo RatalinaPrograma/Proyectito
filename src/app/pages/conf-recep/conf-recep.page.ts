@@ -11,13 +11,12 @@ import { AlertController } from '@ionic/angular';
 })
 export class ConfRecepPage implements OnInit {
   estadoRespuesta: string = 'Pendiente';
-  fechaConfirmacion: string = '';
-  rutMedico: string = ''; // Se actualizará con el parámetro de la URL
-  idEmergencia: number = 1;
+  fechaConfirmacion: Date = new Date(); // Fecha actual
+  rutMedico: string = ''; // RUT del médico, recibido desde la URL
+  idEmergencia: number = 1; // Por defecto, el ID de emergencia
 
-  mensajeHospital: string = 'Cargando...';
   nombreMedico: string = '';
-  apellidoMedico: string = '';
+
   motivoEmergencia: string = '';
   observacionesEmergencia: string = '';
 
@@ -28,56 +27,47 @@ export class ConfRecepPage implements OnInit {
     private bdService: ServiciobdService,
     private router: Router,
     private alertCtrl: AlertController,
-    private route: ActivatedRoute // Servicio para obtener parámetros de ruta
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
+    this.fechaConfirmacion = new Date(); // Asigna la fecha actual
     this.route.params.subscribe((params) => {
       if (params['rut']) {
         this.rutMedico = params['rut'];
-        alert('RUT recibido:'+ this.rutMedico); // Depuración
+        console.log('RUT recibido: ' + this.rutMedico); // Depuración
         this.cargarDetalles();
       } else {
         this.mostrarError('No se proporcionó un RUT válido.');
       }
     });
   }
-  
 
   async cargarDetalles() {
     try {
+      // Obtener la última emergencia ingresada
+      const ultimaEmergencia = await this.bdService.obtenerUltimaEmergencia();
+      if (ultimaEmergencia) {
+        this.idEmergencia = ultimaEmergencia.idEmerg;
+        this.motivoEmergencia = ultimaEmergencia.motivo;
+        this.observacionesEmergencia = ultimaEmergencia.desc_motivo;
+      } else {
+        this.motivoEmergencia = 'No hay emergencias registradas.';
+        this.observacionesEmergencia = '';
+        alert('No se encontró ninguna emergencia reciente.');
+        return;
+      }
+
       // Obtener datos del médico usando el RUT
       const medico = await this.bdService.obtenerMedicoPorRut(this.rutMedico);
       if (medico) {
-        this.nombreMedico = medico.nombres;
-        this.apellidoMedico = medico.apellidos;
+        this.nombreMedico = medico.nombres + ' ' + medico.apellidos;
       } else {
         this.nombreMedico = 'Desconocido';
-        this.apellidoMedico = 'Desconocido';
         console.error('No se encontró al médico con el RUT proporcionado.');
       }
-
-      // Obtener detalles de la emergencia
-      const emergencia = await this.bdService.obtenerEmergenciaPorId(this.idEmergencia);
-      this.motivoEmergencia = emergencia ? emergencia.motivo : 'Motivo no encontrado';
-      this.observacionesEmergencia = emergencia ? emergencia.observaciones : 'Sin observaciones';
-
-      // Obtener última confirmación
-      const ultimaConfirmacion = await this.bdService.obtenerUltimaConfirmacionConDetalles();
-      this.estadoRespuesta = ultimaConfirmacion
-        ? ultimaConfirmacion.estado_confirmacion
-          ? 'Aceptada'
-          : 'Rechazada'
-        : 'Sin confirmación';
-      this.fechaConfirmacion = ultimaConfirmacion
-        ? new Date(ultimaConfirmacion.fecha_confirmacion).toLocaleString()
-        : 'No disponible';
-
-      // Obtener mensaje del hospital relacionado a la emergencia
-      this.mensajeHospital = await this.bdService.obtenerMensajeHospitalPorEmergencia(this.idEmergencia);
     } catch (error) {
       console.error('Error al cargar los detalles:', error);
-      this.mensajeHospital = 'Error al cargar los datos del hospital';
     }
   }
 
@@ -101,6 +91,7 @@ export class ConfRecepPage implements OnInit {
       this.accion = '';
     }
   }
+
   async confirmarRecepcionIncorrecta() {
     const alert = await this.alertCtrl.create({
       header: 'Confirmar',
@@ -142,7 +133,6 @@ export class ConfRecepPage implements OnInit {
     });
     await alert.present();
   }
-  
 
   private async mostrarError(mensaje: string) {
     const alert = await this.alertCtrl.create({

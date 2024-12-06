@@ -95,7 +95,7 @@ export class ServiciobdService {
 
         // Elimina tablas (solo en desarrollo)
         //  await this.database.executeSql('DROP TABLE IF EXISTS persona;', []);
-        await this.database.executeSql('DROP TABLE IF EXISTS emergencia;', []);
+        // await this.database.executeSql('DROP TABLE IF EXISTS emergencia;', []);
         // Crea las tablas
         console.log('Info', 'Creando tablas...');
         await this.crearTablas();
@@ -1093,20 +1093,26 @@ validarRutCompleto(rut: string): boolean {
 
 
 
-
   async obtenerUltimaEmergencia(): Promise<any> {
-    const query = 'SELECT * FROM emergencia ORDER BY idEmerg DESC LIMIT 1';
+    const query = `
+      SELECT * FROM emergencia
+      ORDER BY idEmerg DESC
+      LIMIT 1
+    `;
+  
     try {
       const resultado = await this.database.executeSql(query, []);
       if (resultado.rows.length > 0) {
-        return resultado.rows.item(0);
+        return resultado.rows.item(0); 
+      } else {
+        return null; 
       }
-      return null;
     } catch (error) {
       console.error('Error al obtener la última emergencia:', error);
       throw error;
     }
   }
+  
 
   async obtenerRutPorIdPaciente(idPaciente: number): Promise<string | null> {
     const query = `SELECT rut FROM paciente WHERE idPaciente = ?`;
@@ -1245,7 +1251,7 @@ validarRutCompleto(rut: string): boolean {
   }
 
   async obtenerMedicoPorRut(rut: string): Promise<any> {
-    const query = `SELECT idPersona FROM persona WHERE rut = ?`;
+    const query = `SELECT * FROM persona WHERE rut = ?`;
     const res = await this.database.executeSql(query, [rut]);
     return res.rows.length > 0 ? res.rows.item(0) : null;
   }

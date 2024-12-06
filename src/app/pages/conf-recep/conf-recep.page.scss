@@ -1,0 +1,91 @@
+/* Estilos generales */
+ion-content {
+  --background: #f7f7f7;
+}
+
+/* Estilo del encabezado */
+ion-header {
+  ion-toolbar {
+    --background: #4a90e2; /* Color azul para el encabezado */
+    --color: white;
+  }
+  ion-title {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  ion-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+}
+
+/* Estilo de la tarjeta */
+ion-card {
+  margin: 16px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+ion-card-header {
+  --background: #4a90e2;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+}
+
+ion-card-title {
+  font-size: 18px;
+  margin-bottom: 0;
+}
+
+ion-card-content {
+  font-size: 16px;
+  color: #333;
+}
+
+/* Estilo de los botones */
+ion-button {
+  margin: 8px 16px;
+  font-size: 16px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+ion-button[color="danger"] {
+  --background: #e74c3c;
+  --background-hover: #c0392b;
+  --background-activated: #a93226;
+}
+
+ion-button[color="primary"] {
+  --background: #4a90e2;
+  --background-hover: #3b7bc4;
+  --background-activated: #32699e;
+}
+
+ion-spinner {
+  margin-left: 8px;
+}
+
+/* Estilo de los ítems */
+ion-item {
+  --background: transparent;
+  --border-color: #e0e0e0;
+  margin: 4px 0;
+  padding: 8px 16px;
+  border-radius: 5px;
+}
+
+ion-label h2 {
+  font-size: 16px;
+  font-weight: bold;
+  color: #4a90e2;
+  margin: 0;
+}
+
+ion-label p {
+  font-size: 14px;
+  color: #333;
+  margin: 4px 0 0;
+}
