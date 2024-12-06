@@ -1,22 +1,29 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NuevaEmergenciaPage } from './nueva-emergencia.page';
-import { FormsModule } from '@angular/forms'; // Si usas formularios
-import { IonicModule } from '@ionic/angular'; // Importa IonicModule para los componentes de Ionic
-import { HttpClientTestingModule } from '@angular/common/http/testing'; // Para simular peticiones HTTP
+import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs'; // Para simular observables
+import { of } from 'rxjs';
+import { ServiciobdService } from '../services/serviciobd.service';
 
 describe('NuevaEmergenciaPage', () => {
   let component: NuevaEmergenciaPage;
   let fixture: ComponentFixture<NuevaEmergenciaPage>;
 
+  // Mock para ServiciobdService
+  const mockServiciobdService = {
+    agregarPaciente: jasmine.createSpy('agregarPaciente').and.returnValue(Promise.resolve(true)),
+    listarPacientes: jasmine.createSpy('listarPacientes').and.returnValue(Promise.resolve([])),
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [NuevaEmergenciaPage],
       imports: [
-        FormsModule, // Importa si usas formularios
-        IonicModule.forRoot(), // Módulo de Ionic necesario para las pruebas
-        HttpClientTestingModule, // Módulo para simular solicitudes HTTP
+        FormsModule,
+        IonicModule.forRoot(),
+        HttpClientTestingModule,
       ],
       providers: [
         {
@@ -24,10 +31,14 @@ describe('NuevaEmergenciaPage', () => {
           useValue: {
             snapshot: {
               paramMap: {
-                get: (key: string) => 'mockValue', // Simula parámetros de la ruta
+                get: (key: string) => 'mockValue',
               },
             },
           },
+        },
+        {
+          provide: ServiciobdService,
+          useValue: mockServiciobdService, // Usamos el mock del servicio
         },
       ],
     }).compileComponents();

@@ -3,8 +3,8 @@ import { RestablecerContrasenaPage } from './restablecer-contrasena.page';
 import { Router } from '@angular/router';
 import { AlertasService } from '../services/alertas.service';
 import { ServiciobdService } from '../services/serviciobd.service';
-import { IonicModule } from '@ionic/angular';
-import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
+import { IonicModule, NavController } from '@ionic/angular';
+import { of } from 'rxjs';
 
 describe('RestablecerContrasenaPage', () => {
   let component: RestablecerContrasenaPage;
@@ -12,14 +12,17 @@ describe('RestablecerContrasenaPage', () => {
   let serviciobdServiceMock: jasmine.SpyObj<ServiciobdService>;
   let alertasServiceMock: jasmine.SpyObj<AlertasService>;
   let routerMock: jasmine.SpyObj<Router>;
-  let sqliteMock: any;
+  let navControllerMock: any;
 
   beforeEach(async () => {
+    // Crear mocks para las dependencias
     serviciobdServiceMock = jasmine.createSpyObj('ServiciobdService', ['modificarClave']);
     alertasServiceMock = jasmine.createSpyObj('AlertasService', ['presentAlert']);
     routerMock = jasmine.createSpyObj('Router', ['navigate']);
-
-    sqliteMock = jasmine.createSpyObj('SQLite', ['create']);
+    navControllerMock = {
+      navigateRoot: jasmine.createSpy('navigateRoot'),
+      ionViewWillEnter: of({}), // Mock de un observable para ionViewWillEnter
+    };
 
     await TestBed.configureTestingModule({
       declarations: [RestablecerContrasenaPage],
@@ -28,7 +31,7 @@ describe('RestablecerContrasenaPage', () => {
         { provide: ServiciobdService, useValue: serviciobdServiceMock },
         { provide: AlertasService, useValue: alertasServiceMock },
         { provide: Router, useValue: routerMock },
-        { provide: SQLite, useValue: sqliteMock }, // Mock de SQLite
+        { provide: NavController, useValue: navControllerMock }, // Mock corregido de NavController
       ],
     }).compileComponents();
 

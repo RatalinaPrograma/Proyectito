@@ -2,19 +2,34 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EnvioInfoPage } from './envio-info.page';
 import { ServiciobdService } from '../services/serviciobd.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, NavController } from '@ionic/angular';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
+import { of, BehaviorSubject } from 'rxjs';
+import { Pacientes } from '../services/pacientes';
 
 describe('EnvioInfoPage', () => {
   let component: EnvioInfoPage;
   let fixture: ComponentFixture<EnvioInfoPage>;
+
   let serviciobdServiceMock: jasmine.SpyObj<ServiciobdService>;
   let routerMock: jasmine.SpyObj<Router>;
   let activatedRouteMock: any;
-  let sqliteMock: any; // Mock manual para SQLite
+  let sqliteMock: jasmine.SpyObj<SQLite>;
+  let navControllerMock: any;
 
   beforeEach(async () => {
+    // Mock de datos de paciente
+    const mockPaciente: Pacientes = {
+      nombre: 'Juan Pérez',
+      f_nacimiento: new Date('1990-01-01'), // Ahora es de tipo Date
+      idGenero: 1,
+      rut: '12345678-9',
+      telefono_contacto: '+56912345678',
+    };
+
     serviciobdServiceMock = jasmine.createSpyObj('ServiciobdService', ['obtenerPaciente']);
+    serviciobdServiceMock.obtenerPaciente.and.returnValue(Promise.resolve(mockPaciente)); // Simula retorno de Promise
+
     routerMock = jasmine.createSpyObj('Router', ['navigate']);
     sqliteMock = jasmine.createSpyObj('SQLite', ['create']);
     activatedRouteMock = {
@@ -25,6 +40,9 @@ describe('EnvioInfoPage', () => {
       },
     };
 
+    navControllerMock = jasmine.createSpyObj('NavController', ['navigateBack', 'navigateForward']);
+    navControllerMock.router = new BehaviorSubject(null); // Simula un observable interno
+
     await TestBed.configureTestingModule({
       declarations: [EnvioInfoPage],
       imports: [IonicModule.forRoot()],
@@ -32,7 +50,8 @@ describe('EnvioInfoPage', () => {
         { provide: ServiciobdService, useValue: serviciobdServiceMock },
         { provide: Router, useValue: routerMock },
         { provide: ActivatedRoute, useValue: activatedRouteMock },
-        { provide: SQLite, useValue: sqliteMock }, // Mock para SQLite
+        { provide: SQLite, useValue: sqliteMock },
+        { provide: NavController, useValue: navControllerMock },
       ],
     }).compileComponents();
 
@@ -41,7 +60,9 @@ describe('EnvioInfoPage', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create', async () => {
     expect(component).toBeTruthy();
+    // Verifica que el método de obtenerPaciente fue llamado
+    expect(serviciobdServiceMock.obtenerPaciente).toHaveBeenCalledWith('12345678-9');
   });
 });

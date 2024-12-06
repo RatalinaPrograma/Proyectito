@@ -78,9 +78,8 @@ export class CrudHospitalPage implements OnInit, OnDestroy, ViewWillEnter {
   agregarHospital() {
     this.router.navigate(['/agregar-hospital']);
   }
+
   irACrudHospital() {
     this.router.navigate(['/home']);
-  
   }
-
 }

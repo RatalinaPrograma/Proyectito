@@ -28,6 +28,9 @@ describe('CrudHospitalPage', () => {
       executeSql: jasmine.createSpy('executeSql').and.returnValue(Promise.resolve([])),
     }));
 
+    // Configurar mock para consultarTablaHospital
+    serviciobdServiceMock.consultarTablaHospital.and.returnValue(Promise.resolve([])); // Retorna una lista vacía como ejemplo
+
     await TestBed.configureTestingModule({
       declarations: [CrudHospitalPage],
       imports: [IonicModule.forRoot()],
@@ -35,8 +38,8 @@ describe('CrudHospitalPage', () => {
         { provide: ServiciobdService, useValue: serviciobdServiceMock },
         { provide: AlertasService, useValue: alertasServiceMock },
         { provide: Router, useValue: routerMock },
-        { provide: SQLite, useValue: sqliteMock }, // Proveer mock de SQLite
-        { provide: NavController, useValue: navControllerMock }, // Proveer mock de NavController
+        { provide: SQLite, useValue: sqliteMock },
+        { provide: NavController, useValue: navControllerMock },
       ],
     }).compileComponents();
 
@@ -47,5 +50,29 @@ describe('CrudHospitalPage', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('debería listar los hospitales correctamente', async () => {
+    const hospitalesMock = [
+      { idHospital: 1, nombre: 'Hospital A', direccion: 'Dirección A' },
+      { idHospital: 2, nombre: 'Hospital B', direccion: 'Dirección B' },
+    ];
+
+    // Configurar el mock para devolver datos simulados
+    serviciobdServiceMock.consultarTablaHospital.and.returnValue(Promise.resolve(hospitalesMock));
+
+    await component.listarHospitales(); // Llama al método
+    fixture.detectChanges();
+
+    expect(component.hospitales).toEqual(hospitalesMock); // Verifica que los hospitales se asignaron
+    expect(serviciobdServiceMock.consultarTablaHospital).toHaveBeenCalled();
+  });
+
+  it('debería llamar a listarHospitales en ngOnInit', () => {
+    const spyListarHospitales = spyOn(component, 'listarHospitales').and.callThrough();
+
+    component.ngOnInit();
+
+    expect(spyListarHospitales).toHaveBeenCalled();
   });
 });
