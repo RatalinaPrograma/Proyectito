@@ -34,6 +34,7 @@
       <ng-template #noEmergencias>
         <p style="text-align: center;">No hay emergencias activas en este momento.</p>
       </ng-template>
+
     </ion-card-content>
   </ion-card>
 
@@ -44,56 +45,56 @@
           Nueva Emergencia
         </ion-button>
       </ion-col>
-      
+
       <ion-col size="12" size-md="4">
         <ion-button expand="block" class="btn-verde-claro" routerLink="/historial-casos" routerDirection="root">
           Historial Casos
         </ion-button>
       </ion-col>
-      
+
       <ion-col size="12" size-md="4" *ngIf="idRolUsuario === 1">
         <ion-button expand="block" class="btn-verde-pastel" routerLink="/buscar-ambulancia" routerDirection="root">
           Configuración Unidad
         </ion-button>
       </ion-col>
-      
+
       <ion-col size="12" size-md="4" *ngIf="idRolUsuario === 1 || idRolUsuario === 3">
         <ion-button expand="block" class="btn-turquesa-claro" routerLink="/detalles-caso-anterior"
           routerDirection="root">
           Detalles de Caso anterior
         </ion-button>
       </ion-col>
-      
+
       <ion-col size="12" size-md="4" *ngIf="idRolUsuario === 1 || idRolUsuario === 3">
         <ion-button expand="block" class="btn-aqua" routerLink="/conf-recepcion" routerDirection="root">
           Verificación de la recepción
         </ion-button>
       </ion-col>
-      
+
       <ion-col size="12" size-md="4" *ngIf="idRolUsuario === 1 || idRolUsuario === 2">
         <ion-button expand="block" class="btn-azul-claro" routerLink="/crud-pacientes" routerDirection="root">
           Pacientes
         </ion-button>
       </ion-col>
-      
+
       <ion-col size="12" size-md="4" *ngIf="idRolUsuario === 1">
         <ion-button expand="block" class="btn-verde-claro" routerLink="/crud-hospital" routerDirection="root">
           Hospitales
         </ion-button>
       </ion-col>
-      
+
       <ion-col size="12" size-md="4" *ngIf="idRolUsuario === 1">
         <ion-button expand="block" class="btn-verde-pastel" routerLink="/crud-usuarios" routerDirection="root">
           Usuarios
         </ion-button>
       </ion-col>
-      
+
       <ion-col size="12" size-md="4" *ngIf="idRolUsuario === 1 || idRolUsuario === 2 || idRolUsuario === 3">
         <ion-button expand="block" class="btn-turquesa-claro" routerLink="/mapa-vivo" routerDirection="root">
           Mapa
         </ion-button>
       </ion-col>
-      
+
     </ion-row>
   </ion-grid>
 

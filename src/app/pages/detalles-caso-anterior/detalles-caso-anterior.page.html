@@ -40,17 +40,13 @@
         <ion-label>Observaciones</ion-label>
         <ion-text>{{ emergencia.observaciones }}</ion-text>
       </ion-item>
-      <ion-item>
-        <ion-label>Hospital</ion-label>
-        <ion-text>{{ emergencia.idHospital }}</ion-text>
-      </ion-item>
     </ion-card-content>
   </ion-card>
 
   <!-- Botones de Acción -->
   <ion-toolbar>
     <ion-buttons slot="end">
-      <ion-button class="editarbtn">Editar Caso</ion-button>
+      <ion-button class="editarbtn" routerLink="/home">Volver</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-content>

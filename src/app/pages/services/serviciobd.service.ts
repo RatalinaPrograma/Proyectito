@@ -94,8 +94,8 @@ export class ServiciobdService {
        console.log('Info', 'Base de datos creada correctamente.');
 
         // Elimina tablas (solo en desarrollo)
-         await this.database.executeSql('DROP TABLE IF EXISTS persona;', []);
-
+        //  await this.database.executeSql('DROP TABLE IF EXISTS persona;', []);
+        await this.database.executeSql('DROP TABLE IF EXISTS emergencia;', []);
         // Crea las tablas
         console.log('Info', 'Creando tablas...');
         await this.crearTablas();
@@ -113,7 +113,7 @@ export class ServiciobdService {
 
         this.isDBReady.next(true);
         this.dbIsCreated = true;
-        await this.presentAlert('Éxito', 'Base de datos inicializada correctamente.');
+        console.log('Éxito', 'Base de datos inicializada correctamente.');
       } catch (error) {
         console.error('Error al inicializar la base de datos:', error);
         await this.presentAlert('Error', `No se pudo inicializar la base de datos. Error: ${(error as any).message}`);
@@ -553,36 +553,40 @@ export class ServiciobdService {
 
 //////////////////////////////////////////////////////////////////////
 async register(persona: any): Promise<boolean> {
+  // Normaliza el RUT
   persona.rut = this.normalizarRut(persona.rut);
 
-  // Verificar si el RUT o correo ya están registrados
-  const queryRut = 'SELECT COUNT(*) as count FROM persona WHERE rut = ?';
-  const queryCorreo = 'SELECT COUNT(*) as count FROM persona WHERE correo = ?';
-
-  const rutExiste = await this.database.executeSql(queryRut, [persona.rut]);
-  if (rutExiste.rows.item(0).count > 0) {
-    this.AlertasService.presentAlert('Error en registro', 'El RUT ya está registrado.');
-    return false;
-  }
-
-  const correoExiste = await this.database.executeSql(queryCorreo, [persona.correo]);
-  if (correoExiste.rows.item(0).count > 0) {
-    this.AlertasService.presentAlert('Error en registro', 'El correo ya está registrado.');
-    return false;
-  }
-
-  // Validar formato y dígito verificador del RUT
+  // Valida el formato del RUT
   if (!/^[0-9]{7,8}-[0-9Kk]{1}$/.test(persona.rut)) {
-    this.AlertasService.presentAlert('Error en registro', 'El RUT debe tener el formato 12345678-9.');
+    await this.AlertasService.presentAlert('Error en registro', 'El RUT debe tener el formato 12345678-9.');
     return false;
   }
 
+  // Valida el RUT completo
   if (!this.validarRutCompleto(persona.rut)) {
-    this.AlertasService.presentAlert('Error en registro', 'El RUT ingresado es inválido.');
+    await this.AlertasService.presentAlert('Error en registro', 'El RUT ingresado es inválido.');
     return false;
   }
 
-  // Intentar insertar el usuario
+  // Verifica si el RUT ya existe
+  const queryRut = 'SELECT COUNT(*) as count FROM persona WHERE rut = ?';
+  const rutExiste = await this.database.executeSql(queryRut, [persona.rut]);
+
+  if (rutExiste.rows.item(0).count > 0) {
+    await this.AlertasService.presentAlert('Error en registro', 'El RUT ya está registrado.');
+    return false;
+  }
+
+  // Verifica si el correo ya existe
+  const queryCorreo = 'SELECT COUNT(*) as count FROM persona WHERE correo = ?';
+  const correoExiste = await this.database.executeSql(queryCorreo, [persona.correo]);
+
+  if (correoExiste.rows.item(0).count > 0) {
+    await this.AlertasService.presentAlert('Error en registro', 'El correo ya está registrado.');
+    return false;
+  }
+
+  // Inserta el usuario si las validaciones pasaron
   const query = `
     INSERT INTO persona (nombres, apellidos, rut, correo, clave, telefono, foto, idRol) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -604,19 +608,21 @@ async register(persona: any): Promise<boolean> {
   } catch (error) {
     console.error('Error al registrar usuario:', error);
 
+    // Manejo de errores específicos
     if ((error as any).code === 'SQLITE_CONSTRAINT') {
       if ((error as any).message.includes('rut')) {
-        this.AlertasService.presentAlert('Error en registro', 'El RUT ya está registrado.');
+        await this.AlertasService.presentAlert('Error en registro', 'El RUT ya está registrado.');
       } else if ((error as any).message.includes('correo')) {
-        this.AlertasService.presentAlert('Error en registro', 'El correo ya está registrado.');
+        await this.AlertasService.presentAlert('Error en registro', 'El correo ya está registrado.');
       }
     } else {
-      this.AlertasService.presentAlert('Error en registro', 'El registro falló. Verifique los datos.');
+      await this.AlertasService.presentAlert('Error en registro', 'El registro falló. Verifique los datos.');
     }
 
     return false;
   }
 }
+
 
 normalizarRut(rut: string): string {
   return rut.trim().replace(/[^0-9Kk-]/g, '').toUpperCase();
@@ -988,7 +994,7 @@ validarRutCompleto(rut: string): boolean {
   }
 
 
-  async obten0erUltimaConfirmacion(): Promise<any> {
+  async obtenerUltimaConfirmacion(): Promise<any> {
     const query = 'SELECT * FROM confirmacion ORDER BY idConfirmacion DESC LIMIT 1';
     const resultado = await this.database.executeSql(query, []);
     if (resultado.rows.length > 0) {
@@ -999,26 +1005,52 @@ validarRutCompleto(rut: string): boolean {
 
   async obtenerUltimasEmergenciasActivas(): Promise<any[]> {
     const query = `
-    SELECT e.*, p.nombre AS nombrePaciente
-    FROM emergencia e
-    INNER JOIN paciente p ON e.idPaciente = p.idPaciente
-    WHERE e.estado = 'activo' 
-    ORDER BY e.fecha_emer DESC 
-    LIMIT 2
-  `;
+      SELECT * FROM emergencia
+      WHERE estado = 'activo'
+      ORDER BY fecha_emer DESC
+      LIMIT 10
+    `;
+  
     try {
       const resultado = await this.database.executeSql(query, []);
       const emergencias = [];
       for (let i = 0; i < resultado.rows.length; i++) {
         emergencias.push(resultado.rows.item(i));
       }
-      console.log('Emergencias activas obtenidas:', emergencias);
+  
+      if (emergencias.length > 0) {
+        alert('Emergencias activas obtenidas correctamente.');
+      } else {
+        alert('No hay emergencias activas registradas.');
+      }
+  
       return emergencias;
     } catch (error) {
-      console.error('Error al obtener emergencias activas:', error);
+      alert('Error al obtener emergencias activas: ' + JSON.stringify(error));
       throw error;
     }
   }
+  
+  async verificarEstadoEmergencia(idEmerg: number): Promise<void> {
+    const query = `SELECT estado FROM emergencia WHERE idEmerg = ?`;
+  
+    try {
+      const resultado = await this.database.executeSql(query, [idEmerg]);
+      if (resultado.rows.length > 0) {
+        const estado = resultado.rows.item(0).estado;
+        alert('Estado de la emergencia: ' + estado);
+      } else {
+        alert('La emergencia no existe.');
+      }
+    } catch (error) {
+      alert('Error al verificar el estado de la emergencia: ' + JSON.stringify(error));
+      throw error;
+    }
+  }
+  
+  
+  
+
 
   async actualizarEstadoEmergencia(idEmerg: number, nuevoEstado: string): Promise<void> {
     const query = 'UPDATE emergencia SET estado = ? WHERE idEmerg = ?';
@@ -1031,23 +1063,33 @@ validarRutCompleto(rut: string): boolean {
     }
   }
 
+  
   async agregarEmergencia(motivo: string, descripcionMotivo: string, notas: string, idPaciente: number): Promise<void> {
-    const fechaEmergencia = new Date().toISOString();
-    const estado = 'activo';
-
+    const fechaEmergencia = new Date().toISOString(); // Fecha actual
+    const estado = 'activo'; // Estado predeterminado como 'activo'
+  
     const query = `
-    INSERT INTO emergencia (fecha_emer, motivo, desc_motivo, observaciones, estado, idPaciente)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `;
-
+      INSERT INTO emergencia (fecha_emer, motivo, desc_motivo, observaciones, estado, idPaciente)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
+  
     try {
-      await this.database.executeSql(query, [fechaEmergencia, motivo, descripcionMotivo, notas, estado, idPaciente]);
-      console.log('Emergencia guardada correctamente');
+      const res = await this.database.executeSql(query, [fechaEmergencia, motivo, descripcionMotivo, notas, estado, idPaciente]);
+      alert('Emergencia guardada correctamente con estado activo.');
+  
+      // Verificar el estado de la emergencia registrada
+      const idEmerg = res.insertId; // Obtén el ID de la emergencia recién creada
+      await this.verificarEstadoEmergencia(idEmerg); // Llama a la función aquí
+  
     } catch (error) {
-      console.error('Error al guardar la emergencia en la base de datos:', error);
+      alert('Error al guardar la emergencia: ' + JSON.stringify(error));
       throw error;
     }
   }
+  
+  
+  
+
 
 
 

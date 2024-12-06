@@ -20,7 +20,7 @@ const routes: Routes = [
     loadChildren: () => import('./pages/reg-detallesmedicos/reg-detallesmedicos.module').then( m => m.RegDetallesmedicosPageModule)
   },
   {
-    path: 'reg-causaemergencia/:rut/:idPaciente',
+    path: 'reg-causaemergencia/:rut',
     loadChildren: () => import('./pages/reg-causaemergencia/reg-causaemergencia.module').then( m => m.RegCausaemergenciaPageModule)
   },
   {

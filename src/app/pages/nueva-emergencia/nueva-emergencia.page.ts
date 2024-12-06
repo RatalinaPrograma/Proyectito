@@ -96,7 +96,7 @@ export class NuevaEmergenciaPage implements OnInit {
       );
       
       console.log('Paciente guardado con éxito:', res);
-      this.router.navigate(['/reg-causaemergencia',this.paciente.rut, res]);
+      this.router.navigate(['/reg-causaemergencia',this.paciente.rut]);
 
   
     } catch (error) {
@@ -159,8 +159,6 @@ export class NuevaEmergenciaPage implements OnInit {
     return true;
   }
 
-  async enviarEmergencia(){
-    
-  }
+
   
 }

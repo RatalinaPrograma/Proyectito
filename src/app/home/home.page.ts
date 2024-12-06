@@ -24,19 +24,32 @@ export class HomePage implements OnInit {
 
   
   emergenciasActivas: any[] = [];
-  async ngOnInit() {
+
+
+async ngOnInit() {
+  this.actualizarHora();
+  setInterval(() => {
     this.actualizarHora();
-    setInterval(() => {
-      this.actualizarHora();
-    }, 1000); // Actualiza la hora cada segundo
-    this.obtenerDatosUsuario();
-    try {
-      this.emergenciasActivas = await this.serviciobd.obtenerUltimasEmergenciasActivas();
-      console.log('Emergencias activas en el Home:', this.emergenciasActivas); // Depuración
-    } catch (error) {
-      console.error('Error al obtener emergencias activas:', error);
+  }, 1000); // Actualiza la hora cada segundo
+
+  this.obtenerDatosUsuario();
+
+  try {
+    const emergenciasActivas = await this.serviciobd.obtenerUltimasEmergenciasActivas();
+
+    // Verifica el estado de cada emergencia activa
+    for (const emergencia of emergenciasActivas) {
+      await this.serviciobd.verificarEstadoEmergencia(emergencia.idEmerg);
     }
+
+    this.emergenciasActivas = emergenciasActivas;
+    alert('Emergencias activas cargadas correctamente.');
+  } catch (error) {
+    alert('Error al obtener emergencias activas: ' + JSON.stringify(error));
   }
+}
+
+
 
   obtenerDatosUsuario() {
     const usuario1 = localStorage.getItem('usuario');
