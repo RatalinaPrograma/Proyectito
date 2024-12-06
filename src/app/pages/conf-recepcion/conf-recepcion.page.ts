@@ -96,7 +96,7 @@ export class ConfRecepcionPage implements OnInit {
                 buttons: ['OK'],
               });
               await alertElement.present();
-              this.router.navigate(['/vista-medico']);
+              this.router.navigate(['/home']);
             } catch (error) {
               console.error('Error al confirmar la recepción:', error);
               const alertElement = await this.alertCtrl.create({

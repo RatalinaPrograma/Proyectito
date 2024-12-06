@@ -150,7 +150,7 @@ export class RegisterParamedicoPage {
   }
 
   async irLogin() {
-    await this.router.navigate(['/crud-usuarios']);
+    await this.router.navigate(['/login-paramedico']);
   }
 
 async prellenarPrefijo() {

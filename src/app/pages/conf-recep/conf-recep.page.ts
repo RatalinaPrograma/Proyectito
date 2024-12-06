@@ -32,16 +32,17 @@ export class ConfRecepPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Obtener el RUT desde la URL
     this.route.params.subscribe((params) => {
-      this.rutMedico = params['rut']; // Asignar el RUT recibido
-      if (this.rutMedico) {
-        this.cargarDetalles(); // Cargar los detalles con el RUT
+      if (params['rut']) {
+        this.rutMedico = params['rut'];
+        alert('RUT recibido:'+ this.rutMedico); // Depuración
+        this.cargarDetalles();
       } else {
         this.mostrarError('No se proporcionó un RUT válido.');
       }
     });
   }
+  
 
   async cargarDetalles() {
     try {
@@ -91,7 +92,7 @@ export class ConfRecepPage implements OnInit {
       const confirmacion = new Confirmacion(this.idEmergencia, medico.idPersona, true);
       await this.bdService.guardarConfirmacion(confirmacion);
       alert('Recepción confirmada como correcta');
-      this.router.navigate(['/vista-medico']);
+      this.router.navigate(['/home']);
     } catch (error) {
       console.error('Error al confirmar la recepción:', error);
       this.mostrarError(`Error al confirmar la recepción: ${(error as Error).message}`);
@@ -127,7 +128,7 @@ export class ConfRecepPage implements OnInit {
                 buttons: ['OK'],
               });
               await alertElement.present();
-              this.router.navigate(['/vista-medico']);
+              this.router.navigate(['/home']);
             } catch (error) {
               console.error('Error al confirmar la recepción:', error);
               this.mostrarError(`Error al confirmar la recepción: ${(error as Error).message}`);

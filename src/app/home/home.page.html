@@ -65,8 +65,8 @@
         </ion-button>
       </ion-col>
 
-      <ion-col size="12" size-md="4" *ngIf="idRolUsuario === 1 || idRolUsuario === 3">
-        <ion-button expand="block" class="btn-aqua" routerLink="/conf-recepcion" routerDirection="root">
+      <ion-col size="12" size-md="4" *ngIf="idRolUsuario === 1 ||idRolUsuario === 3">
+        <ion-button expand="block" class="btn-aqua" (click)="irConfrecep()" routerDirection="root">
           Verificación de la recepción
         </ion-button>
       </ion-col>

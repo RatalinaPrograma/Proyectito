@@ -43,7 +43,7 @@ async ngOnInit() {
     }
 
     this.emergenciasActivas = emergenciasActivas;
-    alert('Emergencias activas cargadas correctamente.');
+    console.log('Emergencias activas cargadas correctamente.');
   } catch (error) {
     alert('Error al obtener emergencias activas: ' + JSON.stringify(error));
   }
@@ -55,62 +55,46 @@ async ngOnInit() {
     const usuario1 = localStorage.getItem('usuario');
     if (usuario1) {
       const usuario = JSON.parse(usuario1);
-      this.idRolUsuario = usuario.rol; // Rol del usuario
-      this.rutUsuario = usuario.rut;   // RUT del usuario
+      this.idRolUsuario = usuario.rol; 
+      this.rutUsuario = usuario.rut;   
     }
   }
   
 
   actualizarHora() {
     const ahora = new Date();
-    this.horaActual = ahora.toLocaleTimeString(); // Esto da la hora en formato local HH:MM:SS
+    this.horaActual = ahora.toLocaleTimeString(); 
   }
 
-  nuevaEmergencia() {
-    // Lógica para crear una nueva emergencia
-    console.log('Creando una nueva emergencia');
-  }
 
-  verHistorial() {
-    // Lógica para ver el historial de emergencias
-    console.log('Viendo el historial de emergencias');
-  }
-
-  irConfiguraciones() {
-    // Lógica para ir a la configuración
-    console.log('Navegando a la configuración');
-  }
-
-  // Funciones de navegación añadidas
   irchatvivo() {
-    // Navega a la página de chat en vivo
+
     this.navCtrl.navigateRoot('/chat-vivo');
   }
 
   irlogin() {
-    // Navega a la página de login de paramédico
     this.navCtrl.navigateRoot('/login-paramedico');
   }
 
   irconfgunidad() {
-    // Navega a la página de configuración de unidad
     this.navCtrl.navigateRoot('/configuracion-unidad');
   }
 
   irHcasos() {
-    // Navega a la página de historial de casos
+
     this.navCtrl.navigateRoot('/detalles-caso-anterior');
   }
 
-  irPhospital() {
-    // Navega a la página de preferencia de hospitales
-    this.navCtrl.navigateRoot('/preferencia-hospital');
-  }
 
-  irSP() {
-    // Navega a la página de soporte técnico
-    this.navCtrl.navigateRoot('/soporte-tecnico');
+  irConfrecep() {
+    if (this.rutUsuario) {
+      this.navCtrl.navigateRoot(`/conf-recep/${this.rutUsuario}`);
+    } else {
+      alert('Error: No se encontró un RUT válido.');
+    }
   }
+  
+  
 
   async cargarEmergenciasActivas() {
     try {

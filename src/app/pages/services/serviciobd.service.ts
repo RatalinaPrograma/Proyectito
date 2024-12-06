@@ -1019,9 +1019,9 @@ validarRutCompleto(rut: string): boolean {
       }
   
       if (emergencias.length > 0) {
-        alert('Emergencias activas obtenidas correctamente.');
+        console.log('Emergencias activas obtenidas correctamente.');
       } else {
-        alert('No hay emergencias activas registradas.');
+        console.log('No hay emergencias activas registradas.');
       }
   
       return emergencias;
@@ -1038,9 +1038,9 @@ validarRutCompleto(rut: string): boolean {
       const resultado = await this.database.executeSql(query, [idEmerg]);
       if (resultado.rows.length > 0) {
         const estado = resultado.rows.item(0).estado;
-        alert('Estado de la emergencia: ' + estado);
+        console.log('Estado de la emergencia: ' + estado);
       } else {
-        alert('La emergencia no existe.');
+        console.log('La emergencia no existe.');
       }
     } catch (error) {
       alert('Error al verificar el estado de la emergencia: ' + JSON.stringify(error));
@@ -1075,7 +1075,7 @@ validarRutCompleto(rut: string): boolean {
   
     try {
       const res = await this.database.executeSql(query, [fechaEmergencia, motivo, descripcionMotivo, notas, estado, idPaciente]);
-      alert('Emergencia guardada correctamente con estado activo.');
+      console.log('Emergencia guardada correctamente con estado activo.');
   
       // Verificar el estado de la emergencia registrada
       const idEmerg = res.insertId; // Obtén el ID de la emergencia recién creada
